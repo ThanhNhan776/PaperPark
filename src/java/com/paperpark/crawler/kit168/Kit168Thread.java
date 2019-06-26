@@ -36,7 +36,12 @@ public class Kit168Thread extends BaseThread implements Runnable {
                 Map<String, String> categories = categoryCrawler.getCategories(URL);
                 
                 for (Map.Entry<String, String> entry : categories.entrySet()) {
-                    // start category page crawl thread
+                    Thread pageCrawlingThread = new Thread(
+                        new Kit168CategoryPageCrawler(context, entry.getKey(), entry.getValue()));
+                    pageCrawlingThread.start();
+                    
+                    System.out.println("Kit168 Category Page Crawler start with Id = " + pageCrawlingThread.getId() + ""
+                            + ", Key = " + entry.getKey() + ", Value = " + entry.getValue());
                     
                     synchronized (BaseThread.getInstance()) {
                         while (BaseThread.isSuspended()) {

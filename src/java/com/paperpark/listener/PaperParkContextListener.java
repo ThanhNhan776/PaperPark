@@ -6,11 +6,13 @@
 package com.paperpark.listener;
 
 import com.paperpark.categories_mapping.CategoryMappings;
-import com.paperpark.dao.utils.DBUtils;
+import com.paperpark.crawler.kit168.Kit168Thread;
+import com.paperpark.utils.DBUtils;
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.persistence.EntityManager;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 import javax.xml.bind.JAXBContext;
@@ -22,14 +24,22 @@ import javax.xml.bind.Unmarshaller;
  *
  * @author NhanTT
  */
-public class GuitarParkContextListener implements ServletContextListener {
+public class PaperParkContextListener implements ServletContextListener {
 
     private static final String CATEGORY_MAPPING_FILE
             = "WEB-INF\\configs\\category\\categories-mapping.xml";
+    
+    private static Kit168Thread kit168Thread;
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         loadCategoryMappings(sce);
+        
+        final ServletContext context = sce.getServletContext();
+        kit168Thread = new Kit168Thread(context);
+        kit168Thread.start();
+        
+        System.out.println("Kit168 Thread start with Id = " + kit168Thread.getId());
     }
 
     @Override
@@ -52,10 +62,10 @@ public class GuitarParkContextListener implements ServletContextListener {
 
             CategoryMappings mappings = (CategoryMappings) un.unmarshal(file);
             if (mappings != null) {
-                sce.getServletContext().setAttribute("CATEGORY_MAPPINGS", mappings.getCategoryMapping());
+                sce.getServletContext().setAttribute("CATEGORY_MAPPINGS", mappings);
             }
         } catch (JAXBException ex) {
-            Logger.getLogger(GuitarParkContextListener.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(PaperParkContextListener.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }

@@ -28,27 +28,27 @@ import javax.xml.stream.events.XMLEvent;
  * @author NhanTT
  */
 public class Kit168CategoryCrawler extends BaseCrawler {
-    
+
     private final String URL = URLConstants.KIT168;
-    
+
     public Kit168CategoryCrawler(ServletContext context) {
         super(context);
     }
-    
+
     public Map<String, String> getCategories(String url) {
         try (BufferedReader reader = getBufferedReaderForUrl(url)) {
             String line = "";
             String document = "";
             boolean isStart = false;
-            
+
             while ((line = reader.readLine()) != null) {
-                if (isStart && line.contains("</ul>")) {
+                if (isStart && line.contains("<div id=\"tag_cloud-2\"")) {
                     break;
                 }
                 if (isStart) {
-                    document += line;
+                    document += line.trim();
                 }
-                if (line.contains("<ul id=\"menu-sidebar\" class=\" top-nav  clearfix\">")) {
+                if (line.contains("<div class=\"span2 nav_bar\">")) {
                     isStart = true;
                 }
             }
@@ -59,29 +59,29 @@ public class Kit168CategoryCrawler extends BaseCrawler {
         }
         return null;
     }
-    
-    public Map<String, String> stAXParserForCategories(String document) 
+
+    public Map<String, String> stAXParserForCategories(String document)
             throws UnsupportedEncodingException, XMLStreamException {
         document = document.trim();
         XMLEventReader eventReader = parseStringToXMLEventReader(document);
         Map<String, String> categories = new HashMap<>();
-        
+
         while (eventReader.hasNext()) {
-            XMLEvent event = (XMLEvent) eventReader.next();
-            if (event.isStartElement()) {
+            XMLEvent event = (XMLEvent) eventReader.next(); 
+            if (event.isStartElement()) { 
                 StartElement startElement = event.asStartElement();
                 String tagName = startElement.getName().getLocalPart();
                 if ("a".equals(tagName)) {
                     Attribute href = startElement.getAttributeByName(new QName("href"));
-                    String link = URL + href.getValue();
+                    String link = href.getValue();
                     event = (XMLEvent) eventReader.next();
                     Characters categoryNameChars = event.asCharacters();
-                    
+
                     categories.put(link, categoryNameChars.getData());
                 }
             }
         }
-        
+
         return categories;
     }
 }

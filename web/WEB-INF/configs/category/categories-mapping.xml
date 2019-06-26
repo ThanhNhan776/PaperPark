@@ -5,12 +5,12 @@
     xsi:schemaLocation='http://www.guitarpark.com/schema/categories-mapping categories-mapping.xsd'
 >
     <categoryMapping>
-        <name>Anime - Game</name>
-        <mapping>Anime - Game</mapping>
+        <name>Anime – Game</name>
+        <mapping>Anime – Game</mapping>
     </categoryMapping>
     <categoryMapping>
-        <name>Đồ vật - Đồ chơi</name>
-        <mapping>Đồ vật - Đồ chơi</mapping>
+        <name>Đồ vật – Đồ chơi</name>
+        <mapping>Đồ vật – Đồ chơi</mapping>
         <mapping>Toys</mapping>
     </categoryMapping>
     <categoryMapping>
@@ -41,8 +41,8 @@
         <mapping>Event</mapping>
     </categoryMapping>
     <categoryMapping>
-        <name>Động - Thực vật</name>
-        <mapping>Động - Thực vật</mapping>
+        <name>Động – Thực vật</name>
+        <mapping>Động – Thực vật</mapping>
         <mapping>Animals</mapping>
     </categoryMapping>
     <categoryMapping>

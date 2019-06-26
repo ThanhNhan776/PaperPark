@@ -5,7 +5,7 @@
  */
 package com.paperpark.dao;
 
-import com.paperpark.dao.utils.DBUtils;
+import com.paperpark.utils.DBUtils;
 import java.io.Serializable;
 import java.lang.reflect.ParameterizedType;
 import java.util.List;
