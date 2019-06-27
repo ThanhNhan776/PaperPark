@@ -14,7 +14,7 @@
     </head>
     <body>
         <h1>Hello World!</h1>
-        <c:set var="mappings" value="${applicationScope.CATEGORY_MAPPINGS}"/>
+        <c:set var="mappings" value="${applicationScope.CATEGORY_MAPPINGS.categoryMapping}"/>
         <c:forEach items="${mappings}" var="mapping">
             <c:out value="${mapping.name}"/><br/>
         </c:forEach>

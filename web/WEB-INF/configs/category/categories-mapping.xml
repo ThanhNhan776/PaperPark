@@ -7,63 +7,47 @@
     <categoryMapping>
         <name>Anime – Game</name>
         <mapping>Anime – Game</mapping>
+        <mapping>Anime</mapping>
+        <mapping>Game</mapping>
     </categoryMapping>
     <categoryMapping>
         <name>Đồ vật – Đồ chơi</name>
         <mapping>Đồ vật – Đồ chơi</mapping>
-        <mapping>Toys</mapping>
-    </categoryMapping>
-    <categoryMapping>
-        <name>Giáo dục</name>
-        <mapping>Educational</mapping>
     </categoryMapping>
     <categoryMapping>
         <name>Phương tiện</name>
         <mapping>Phương tiện</mapping>
-        <mapping>Vehicles</mapping>
-    </categoryMapping>
-    <categoryMapping>
-        <name>Khoa học</name>
-        <mapping>Science</mapping>
+        <mapping>Transportation</mapping>
     </categoryMapping>
     <categoryMapping>
         <name>Kiến trúc</name>
         <mapping>Kiến trúc</mapping>
-        <mapping>Architecture</mapping>
-    </categoryMapping>
-    <categoryMapping>
-        <name>Trang trí</name>
-        <mapping>Decorative</mapping>
+        <mapping>Diorama</mapping>
     </categoryMapping>
     <categoryMapping>
         <name>Lễ hội</name>
         <mapping>Lễ hội</mapping>
-        <mapping>Event</mapping>
     </categoryMapping>
     <categoryMapping>
         <name>Động – Thực vật</name>
         <mapping>Động – Thực vật</mapping>
-        <mapping>Animals</mapping>
+        <mapping>Animal</mapping>
     </categoryMapping>
     <categoryMapping>
-        <name>Người nổi tiếng</name>
+        <name>Nhân vật</name>
         <mapping>Người nổi tiếng</mapping>
+        <mapping>Movie and TV</mapping>
     </categoryMapping>
     <categoryMapping>
         <name>Minecraft</name>
         <mapping>Minecraft</mapping>
     </categoryMapping>
     <categoryMapping>
-        <name>Latin</name>
-        <mapping>Latin flavor.</mapping>
+        <name>Hoạt hình</name>
+        <mapping>Cartoon</mapping>
     </categoryMapping>
     <categoryMapping>
-        <name>Thiệp</name>
-        <mapping>Pop-up Cards</mapping>
-        <mapping>Craft Cards</mapping>
-        <mapping>Greeting Cards</mapping>
-        <mapping>Mini Cards</mapping>
-        <mapping>Envelopes</mapping>
-        <mapping>Stationery</mapping>
+        <name>Khác</name>
+        <mapping>Other</mapping>
     </categoryMapping>
 </categoryMappings>

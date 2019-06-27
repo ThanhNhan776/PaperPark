@@ -11,6 +11,5 @@ package com.paperpark.contants;
  */
 public class URLConstants {
     public static String KIT168 = "https://kit168.com/";
-    public static String FAP = "http://fap.fpt.edu.vn/";
-    public static String CREATIVE_CANON = "https://creativepark.canon/";
+    public static String PAPERCRAFTMUSEUM = "http://www.papercraftmuseum.com/categories";
 }

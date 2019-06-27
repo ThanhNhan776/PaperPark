@@ -29,8 +29,6 @@ import javax.xml.stream.events.XMLEvent;
  */
 public class Kit168CategoryCrawler extends BaseCrawler {
 
-    private final String URL = URLConstants.KIT168;
-
     public Kit168CategoryCrawler(ServletContext context) {
         super(context);
     }

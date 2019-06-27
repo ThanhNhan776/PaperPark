@@ -6,6 +6,8 @@
 package com.paperpark.listener;
 
 import com.paperpark.categories_mapping.CategoryMappings;
+import com.paperpark.contants.ConfigConstants;
+import com.paperpark.crawler.papercraftmuseum.MuseumThread;
 import com.paperpark.crawler.kit168.Kit168Thread;
 import com.paperpark.utils.DBUtils;
 import java.io.File;
@@ -30,6 +32,7 @@ public class PaperParkContextListener implements ServletContextListener {
             = "WEB-INF\\configs\\category\\categories-mapping.xml";
     
     private static Kit168Thread kit168Thread;
+    private static MuseumThread museumThread;
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
@@ -38,8 +41,15 @@ public class PaperParkContextListener implements ServletContextListener {
         final ServletContext context = sce.getServletContext();
         kit168Thread = new Kit168Thread(context);
         kit168Thread.start();
+        if (ConfigConstants.DEBUG) {
+            System.out.println("DEBUG Kit168 Thread start with Id = " + kit168Thread.getId());
+        }
         
-        System.out.println("Kit168 Thread start with Id = " + kit168Thread.getId());
+        museumThread = new MuseumThread(context);
+        museumThread.start();
+        if (ConfigConstants.DEBUG) {
+            System.out.println("DEBUG Museum Thread start with Id = " + museumThread.getId());
+        }
     }
 
     @Override

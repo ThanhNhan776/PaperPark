@@ -42,6 +42,12 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Model.findByHasInstruction", query = "SELECT m FROM Model m WHERE m.hasInstruction = :hasInstruction")})
 public class Model implements Serializable {
 
+    @Column(name = "Link", length = 500)
+    private String link;
+
+    @Column(name = "NumOfParts")
+    private Integer numOfParts;
+
     private static final long serialVersionUID = 1L;
     @Id
     @Basic(optional = false)
@@ -182,6 +188,22 @@ public class Model implements Serializable {
     @Override
     public String toString() {
         return "com.guitarpark.entity.Model[ id=" + id + " ]";
+    }
+
+    public Integer getNumOfParts() {
+        return numOfParts;
+    }
+
+    public void setNumOfParts(Integer numOfParts) {
+        this.numOfParts = numOfParts;
+    }
+
+    public String getLink() {
+        return link;
+    }
+
+    public void setLink(String link) {
+        this.link = link;
     }
     
 }
