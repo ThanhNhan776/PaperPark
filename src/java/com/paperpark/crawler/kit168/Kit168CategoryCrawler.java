@@ -5,7 +5,6 @@
  */
 package com.paperpark.crawler.kit168;
 
-import com.paperpark.contants.URLConstants;
 import com.paperpark.crawler.BaseCrawler;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,27 +34,30 @@ public class Kit168CategoryCrawler extends BaseCrawler {
 
     public Map<String, String> getCategories(String url) {
         try (BufferedReader reader = getBufferedReaderForUrl(url)) {
-            String line = "";
-            String document = "";
-            boolean isStart = false;
-
-            while ((line = reader.readLine()) != null) {
-                if (isStart && line.contains("<div id=\"tag_cloud-2\"")) {
-                    break;
-                }
-                if (isStart) {
-                    document += line.trim();
-                }
-                if (line.contains("<div class=\"span2 nav_bar\">")) {
-                    isStart = true;
-                }
-            }
-            
+            String document = getCategoryDocument(reader);
             return stAXParserForCategories(document);
         } catch (IOException | XMLStreamException ex) {
             Logger.getLogger(Kit168CategoryCrawler.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
+    }
+
+    private String getCategoryDocument(final BufferedReader reader) throws IOException {
+        String line = "";
+        String document = "";
+        boolean isStart = false;
+        while ((line = reader.readLine()) != null) {
+            if (isStart && line.contains("<div id=\"tag_cloud-2\"")) {
+                break;
+            }
+            if (isStart) {
+                document += line.trim();
+            }
+            if (!isStart && line.contains("<div class=\"span2 nav_bar\">")) {
+                isStart = true;
+            }
+        }
+        return document;
     }
 
     public Map<String, String> stAXParserForCategories(String document)

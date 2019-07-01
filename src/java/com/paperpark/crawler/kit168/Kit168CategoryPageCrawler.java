@@ -6,12 +6,24 @@
 package com.paperpark.crawler.kit168;
 
 import com.paperpark.crawler.BaseCrawler;
+import com.paperpark.crawler.BaseThread;
 import com.paperpark.dao.category.CategoryDAO;
 import com.paperpark.entity.Category;
 import com.paperpark.utils.CategoryHelper;
+import com.paperpark.utils.ElementChecker;
+import com.paperpark.utils.TextUtills;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletContext;
+import javax.xml.namespace.QName;
+import javax.xml.stream.XMLEventReader;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.Attribute;
+import javax.xml.stream.events.StartElement;
+import javax.xml.stream.events.XMLEvent;
 
 /**
  *
@@ -22,7 +34,7 @@ public class Kit168CategoryPageCrawler extends BaseCrawler implements Runnable {
     private String pageUrl;
     private String categoryName;
 
-    public Kit168CategoryPageCrawler(ServletContext context, String pageUrl, 
+    public Kit168CategoryPageCrawler(ServletContext context, String pageUrl,
             String categoryName) {
         super(context);
         this.pageUrl = pageUrl;
@@ -31,18 +43,93 @@ public class Kit168CategoryPageCrawler extends BaseCrawler implements Runnable {
 
     @Override
     public void run() {
-        CategoryDAO categoryDAO = CategoryDAO.getInstance();
         Category category = createCategory(categoryName);
         if (category == null) {
             Logger.getLogger(Kit168CategoryPageCrawler.class.getName())
                     .log(Level.SEVERE, null, new Exception("Error: category null"));
             return;
         }
-        
+
+        BufferedReader reader = null;
+        try {
+            reader = getBufferedReaderForUrl(pageUrl);
+            String document = getCategoryPageDocument(reader);
+            
+            document = TextUtills.refineHtml(document);
+
+            synchronized (BaseThread.getInstance()) {
+                while (BaseThread.isSuspended()) {
+                    BaseThread.getInstance().wait();
+                }
+            }
+            
+            int lastPage = getLastPage(document);
+            
+            for (int i = 1; i <= lastPage; ++i) {
+                String categoryPageUrl = pageUrl + "page/" + i;
+                
+                Thread modelListCrawler = new Thread(
+                        new Kit168ModelListCrawler(getContext(), categoryPageUrl, category));
+                modelListCrawler.start();
+                
+                synchronized (BaseThread.getInstance()) {
+                    while (BaseThread.isSuspended()) {
+                        BaseThread.getInstance().wait();
+                    }
+                }
+            }
+        } catch (IOException | InterruptedException | 
+                XMLStreamException | NumberFormatException ex) {
+            Logger.getLogger(Kit168CategoryPageCrawler.class.getName())
+                    .log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private String getCategoryPageDocument(BufferedReader reader) throws IOException {
+        String line = "";
+        String document = "";
+        boolean isStart = false;
+        while ((line = reader.readLine()) != null) {
+            if (!isStart && line.contains("<nav class=\"page-navigation\">")) {
+                isStart = true;
+            }
+            if (isStart) {
+                document += line.trim();
+            }
+            if (isStart && line.contains("</nav>")) {
+                break;
+            }
+        }
+        return document;
+    }
+
+    private int getLastPage(String document)
+            throws UnsupportedEncodingException, XMLStreamException, NumberFormatException {
+        document = document.trim();
+        XMLEventReader eventReader = parseStringToXMLEventReader(document);
+        while (eventReader.hasNext()) {
+            XMLEvent event = (XMLEvent) eventReader.next();
+            
+            if (event.isStartElement()) {
+                StartElement startElement = event.asStartElement();
+                
+                if (ElementChecker.isElementWith(startElement, "li", "class", "bpn-last-page-link")) {
+                    event = (XMLEvent) eventReader.next();
+                    startElement = event.asStartElement();
+                    
+                    String href = getHref(startElement);
+                    String[] hrefTokens = href.split("/");
+                    String pageStr = hrefTokens[hrefTokens.length - 1];
+                    
+                    return Integer.parseInt(pageStr);
+                }
+            }
+        }
+        return 1;
     }
 
     private static final Object LOCK = new Object();
-    
+
     protected Category createCategory(String name) {
         synchronized (LOCK) {
             Category category = null;
@@ -58,9 +145,14 @@ public class Kit168CategoryPageCrawler extends BaseCrawler implements Runnable {
             return category;
         }
     }
-    
+
     private String getRealCategoryName(String altName) {
         CategoryHelper helper = new CategoryHelper(getContext());
         return helper.getRealCategoryName(altName);
+    }
+
+    private String getHref(StartElement a) {
+        Attribute href = a.getAttributeByName(new QName("href"));
+        return href == null ? "" : href.getValue();
     }
 }

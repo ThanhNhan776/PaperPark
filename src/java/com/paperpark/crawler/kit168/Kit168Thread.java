@@ -9,7 +9,6 @@ import com.paperpark.contants.ConfigConstants;
 import com.paperpark.contants.URLConstants;
 import com.paperpark.crawler.BaseThread;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.ServletContext;
@@ -41,8 +40,8 @@ public class Kit168Thread extends BaseThread implements Runnable {
                     pageCrawlingThread.start();
                     
                     if (ConfigConstants.DEBUG) {
-                        System.out.println("DEBUG Kit168 Id = " + pageCrawlingThread.getId() + ""
-                            + ", Key = " + entry.getKey() + ", Value = " + entry.getValue());
+                        System.out.println("DEBUG Kit168 Id = " + pageCrawlingThread.getId()
+                            + "(name, link) = " + entry.getKey() + ", " + entry.getValue());
                     }
                     
                     synchronized (BaseThread.getInstance()) {

@@ -35,18 +35,13 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Model.findById", query = "SELECT m FROM Model m WHERE m.id = :id")
     , @NamedQuery(name = "Model.findByName", query = "SELECT m FROM Model m WHERE m.name = :name")
     , @NamedQuery(name = "Model.findByNumOfSheets", query = "SELECT m FROM Model m WHERE m.numOfSheets = :numOfSheets")
+    , @NamedQuery(name = "Model.findByNumOfParts", query = "SELECT m FROM Model m WHERE m.numOfParts = :numOfParts")
     , @NamedQuery(name = "Model.findByDifficulty", query = "SELECT m FROM Model m WHERE m.difficulty = :difficulty")
     , @NamedQuery(name = "Model.findByFormat", query = "SELECT m FROM Model m WHERE m.format = :format")
     , @NamedQuery(name = "Model.findByImageSrc", query = "SELECT m FROM Model m WHERE m.imageSrc = :imageSrc")
-    , @NamedQuery(name = "Model.findByDownloadLink", query = "SELECT m FROM Model m WHERE m.downloadLink = :downloadLink")
+    , @NamedQuery(name = "Model.findByLink", query = "SELECT m FROM Model m WHERE m.link = :link")
     , @NamedQuery(name = "Model.findByHasInstruction", query = "SELECT m FROM Model m WHERE m.hasInstruction = :hasInstruction")})
 public class Model implements Serializable {
-
-    @Column(name = "Link", length = 500)
-    private String link;
-
-    @Column(name = "NumOfParts")
-    private Integer numOfParts;
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -58,14 +53,16 @@ public class Model implements Serializable {
     private String name;
     @Column(name = "NumOfSheets")
     private Integer numOfSheets;
+    @Column(name = "NumOfParts")
+    private Integer numOfParts;
     @Column(name = "Difficulty")
     private Integer difficulty;
     @Column(name = "Format", length = 10)
     private String format;
     @Column(name = "ImageSrc", length = 500)
     private String imageSrc;
-    @Column(name = "DownloadLink", length = 500)
-    private String downloadLink;
+    @Column(name = "Link", length = 500)
+    private String link;
     @Column(name = "HasInstruction")
     private Boolean hasInstruction;
     @JoinTable(name = "Model_Tag_Mapping", joinColumns = {
@@ -84,6 +81,22 @@ public class Model implements Serializable {
         this.id = id;
     }
 
+    public Model(Integer id, String name, Integer numOfSheets, Integer numOfParts, 
+            Integer difficulty, String format, String imageSrc, String link, 
+            Boolean hasInstruction, Collection<Tag> tagCollection, Category categoryId) {
+        this.id = id;
+        this.name = name;
+        this.numOfSheets = numOfSheets;
+        this.numOfParts = numOfParts;
+        this.difficulty = difficulty;
+        this.format = format;
+        this.imageSrc = imageSrc;
+        this.link = link;
+        this.hasInstruction = hasInstruction;
+        this.tagCollection = tagCollection;
+        this.categoryId = categoryId;
+    }
+    
     public Integer getId() {
         return id;
     }
@@ -106,6 +119,14 @@ public class Model implements Serializable {
 
     public void setNumOfSheets(Integer numOfSheets) {
         this.numOfSheets = numOfSheets;
+    }
+
+    public Integer getNumOfParts() {
+        return numOfParts;
+    }
+
+    public void setNumOfParts(Integer numOfParts) {
+        this.numOfParts = numOfParts;
     }
 
     public Integer getDifficulty() {
@@ -132,12 +153,12 @@ public class Model implements Serializable {
         this.imageSrc = imageSrc;
     }
 
-    public String getDownloadLink() {
-        return downloadLink;
+    public String getLink() {
+        return link;
     }
 
-    public void setDownloadLink(String downloadLink) {
-        this.downloadLink = downloadLink;
+    public void setLink(String link) {
+        this.link = link;
     }
 
     public Boolean getHasInstruction() {
@@ -187,23 +208,7 @@ public class Model implements Serializable {
 
     @Override
     public String toString() {
-        return "com.guitarpark.entity.Model[ id=" + id + " ]";
-    }
-
-    public Integer getNumOfParts() {
-        return numOfParts;
-    }
-
-    public void setNumOfParts(Integer numOfParts) {
-        this.numOfParts = numOfParts;
-    }
-
-    public String getLink() {
-        return link;
-    }
-
-    public void setLink(String link) {
-        this.link = link;
+        return "com.paperpark.entity.Model[ id=" + id + " ]";
     }
     
 }

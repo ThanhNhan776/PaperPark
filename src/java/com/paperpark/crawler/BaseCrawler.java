@@ -14,8 +14,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.nio.charset.Charset;
-import java.util.Random;
 import javax.servlet.ServletContext;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
