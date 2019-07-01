@@ -66,6 +66,7 @@ public class ModelDAO extends BaseDAO<Model, Integer> {
         if (existedModel == null) {
             return create(model);
         } 
+        model.setId(existedModel.getId());
         return update(model);
     }
 }

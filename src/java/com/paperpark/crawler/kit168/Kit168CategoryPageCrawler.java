@@ -5,6 +5,7 @@
  */
 package com.paperpark.crawler.kit168;
 
+import com.paperpark.contants.ConfigConstants;
 import com.paperpark.crawler.BaseCrawler;
 import com.paperpark.crawler.BaseThread;
 import com.paperpark.dao.category.CategoryDAO;
@@ -71,6 +72,10 @@ public class Kit168CategoryPageCrawler extends BaseCrawler implements Runnable {
                 Thread modelListCrawler = new Thread(
                         new Kit168ModelListCrawler(getContext(), categoryPageUrl, category));
                 modelListCrawler.start();
+                
+                if (i % ConfigConstants.CRAWL_THREAD_REDUCE > 0) {
+                    modelListCrawler.join();
+                }
                 
                 synchronized (BaseThread.getInstance()) {
                     while (BaseThread.isSuspended()) {
