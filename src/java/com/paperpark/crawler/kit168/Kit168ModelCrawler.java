@@ -12,7 +12,8 @@ import com.paperpark.entity.Category;
 import com.paperpark.entity.Model;
 import com.paperpark.entity.Tag;
 import com.paperpark.utils.ElementChecker;
-import com.paperpark.utils.TextUtills;
+import com.paperpark.utils.ParseUtils;
+import com.paperpark.utils.TextUtils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -63,7 +64,7 @@ public class Kit168ModelCrawler extends BaseCrawler {
     private Model stAXParserForModel(String document) 
             throws XMLStreamException, UnsupportedEncodingException {
         
-        document = TextUtills.refineHtml(document);
+        document = TextUtils.refineHtml(document);
         
         if (ConfigConstants.DEBUG && ConfigConstants.DEBUG_PRINT_DOC) {
             System.out.println("DEBUG: model document: " + document);
@@ -180,29 +181,13 @@ public class Kit168ModelCrawler extends BaseCrawler {
                     String text = chars.getData();
                     
                     if (text.contains("Số tờ kit")) {
-                        numOfSheet = extractNumber(text);
+                        numOfSheet = ParseUtils.extractNumber(text);
                         return numOfSheet;
                     }
                 }
             }
         }
         return numOfSheet;
-    }
-        
-    private Integer extractNumber(String text) {
-        String regex = "[0-9]+";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(text);
-        if (matcher.find()) {
-            String token = matcher.group();
-            try {
-                int number = Integer.parseInt(token);
-                return number;
-            } catch (NumberFormatException e) {
-                Logger.getLogger(Kit168ModelCrawler.class.getName()).log(Level.SEVERE, null, e);
-            }
-        }
-        return 0;
     }
     
     private Boolean hasInstruction(XMLEventReader eventReader) {
@@ -289,7 +274,7 @@ public class Kit168ModelCrawler extends BaseCrawler {
                     
                     Attribute styleAttr = element.getAttributeByName(new QName("style"));
                     String style = styleAttr.getValue();
-                    Integer difficultPercent = extractNumber(style);
+                    Integer difficultPercent = ParseUtils.extractNumber(style);
                     
                     return difficultPercent / 10;
                 }

@@ -12,7 +12,7 @@ import com.paperpark.dao.category.CategoryDAO;
 import com.paperpark.entity.Category;
 import com.paperpark.utils.CategoryHelper;
 import com.paperpark.utils.ElementChecker;
-import com.paperpark.utils.TextUtills;
+import com.paperpark.utils.TextUtils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -56,7 +56,7 @@ public class Kit168CategoryPageCrawler extends BaseCrawler implements Runnable {
             reader = getBufferedReaderForUrl(pageUrl);
             String document = getCategoryPageDocument(reader);
             
-            document = TextUtills.refineHtml(document);
+            document = TextUtils.refineHtml(document);
 
             synchronized (BaseThread.getInstance()) {
                 while (BaseThread.isSuspended()) {

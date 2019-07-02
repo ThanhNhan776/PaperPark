@@ -19,7 +19,7 @@ import javax.servlet.ServletContext;
  */
 public class MuseumThread extends BaseThread implements Runnable {
 
-    private final String URL = URLConstants.PAPERCRAFTMUSEUM;
+    private final String URL = URLConstants.PAPERCRAFTMUSEUM_CATEGORIES;
 
     private ServletContext context;
 
@@ -41,7 +41,7 @@ public class MuseumThread extends BaseThread implements Runnable {
                     
                     if (ConfigConstants.DEBUG) {
                         System.out.println("DEBUG museum id = " + pageCrawlingThread.getId() 
-                            + "(name; link) = " + entry.getValue() + "; " + entry.getKey());
+                            + " (name; link) = " + entry.getValue() + "; " + entry.getKey());
                     }
                     
                     synchronized (BaseThread.getInstance()) {
