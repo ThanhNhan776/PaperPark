@@ -1,0 +1,40 @@
+.app-logo {
+    text-align: center;
+}
+
+.heading-title {
+    text-align: center;
+}
+
+.container {
+    width: 80%;
+    margin: 0 auto;
+}
+
+.addon-custom {
+    width: 100px;
+}
+
+.bg-primary {
+    background: #C6D8FF !important;
+    color: black;
+}
+
+.bg-primary-emphasis {
+    background: #B4C5E8 !important;
+}
+
+.btn-primary:hover {
+    background-color: #6B5CA5 !important;
+}
+
+.btn-primary:active {
+    background-color: #9388BD !important;
+}
+
+#section-search-result {
+    border: 1px solid red;
+    width: 1000px!important;
+    height: 1000px!important;
+    display: none;
+}

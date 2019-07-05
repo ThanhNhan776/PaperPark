@@ -5,6 +5,7 @@
  */
 package com.paperpark.listener;
 
+import com.guitarpark.config.CrawlerConfig;
 import com.paperpark.categories_mapping.CategoryMappings;
 import com.paperpark.contants.ConfigConstants;
 import com.paperpark.crawler.papercraftmuseum.MuseumThread;
@@ -31,12 +32,21 @@ public class PaperParkContextListener implements ServletContextListener {
     private static final String CATEGORY_MAPPING_FILE
             = "WEB-INF\\configs\\category\\categories-mapping.xml";
     
+    private static final String CRAWLER_CONFIG_FILE
+            = "WEB-INF\\configs\\crawler\\crawler-config.xml";
+    
     private static Kit168Thread kit168Thread;
     private static MuseumThread museumThread;
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
         loadCategoryMappings(sce);
+        
+        CrawlerConfig crawlerConfig = getCrawlerConfig(sce);
+        if (!crawlerConfig.isEnableCrawler()) {
+            System.out.println("INFO Crawler has been disabled.");
+            return;
+        }
         
         final ServletContext context = sce.getServletContext();
         kit168Thread = new Kit168Thread(context);
@@ -77,5 +87,24 @@ public class PaperParkContextListener implements ServletContextListener {
         } catch (JAXBException ex) {
             Logger.getLogger(PaperParkContextListener.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+    
+    private CrawlerConfig getCrawlerConfig(ServletContextEvent sce) {
+        try {
+            JAXBContext context = JAXBContext.newInstance(CrawlerConfig.class);
+            Unmarshaller un = context.createUnmarshaller();
+            
+            String realPath = sce.getServletContext().getRealPath("/");
+            String filePath = realPath + CRAWLER_CONFIG_FILE;
+            
+            File file = new File(filePath);
+            
+            CrawlerConfig config = (CrawlerConfig) un.unmarshal(file);
+            
+            return config;
+        } catch (JAXBException ex) {
+            Logger.getLogger(PaperParkContextListener.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return new CrawlerConfig();
     }
 }
