@@ -6,7 +6,7 @@
 //
 
 
-package com.guitarpark.config;
+package com.paperpark.config.crawler;
 
 import javax.xml.bind.JAXBElement;
 import javax.xml.bind.annotation.XmlElementDecl;

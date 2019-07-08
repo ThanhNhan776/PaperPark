@@ -5,21 +5,21 @@
  */
 package com.paperpark.test;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import com.paperpark.categories_mapping.CategoryMapping;
+import com.paperpark.categories_mapping.CategoryMappings;
 
 /**
  *
  * @author NhanTT
  */
 public class MiscTest {
+    
+    private static final String realPath = "E:\\Java\\Summer_2019\\PaperPark\\web\\";
+
     public static void main(String[] args) {
-        try {
-            System.out.println("start");
-            Thread.sleep(3000);
-            System.out.println("finish");
-        } catch (InterruptedException ex) {
-            Logger.getLogger(MiscTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        CategoryMappings mappings = CategoryMappings.getCategoryMappings(realPath);
+        mappings.getCategoryMapping().forEach((mapping) -> {
+            System.out.println(mapping.getName());
+        });
     }
 }

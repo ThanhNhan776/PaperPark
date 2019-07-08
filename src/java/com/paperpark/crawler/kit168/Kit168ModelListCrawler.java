@@ -67,7 +67,7 @@ public class Kit168ModelListCrawler extends BaseCrawler implements Runnable {
                 if (model == null) {
                     continue;
                 }
-                ModelDAO.getInstance().saveModelWhileCrawling(model);
+                ModelDAO.getInstance().saveModelWhileCrawling(getContext(), model);
 
                 if (ConfigConstants.DEBUG) {
                     System.out.println("DEBUG saved model " + model.getLink());

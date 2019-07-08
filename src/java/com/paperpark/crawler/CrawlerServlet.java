@@ -5,7 +5,7 @@
  */
 package com.paperpark.crawler;
 
-import com.guitarpark.config.CrawlerConfig;
+import com.paperpark.config.crawler.CrawlerConfig;
 import com.paperpark.contants.ConfigConstants;
 import com.paperpark.crawler.kit168.Kit168Thread;
 import com.paperpark.crawler.papercraftmuseum.MuseumThread;

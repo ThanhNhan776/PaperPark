@@ -6,4 +6,4 @@
 //
 
 @javax.xml.bind.annotation.XmlSchema(namespace = "http://www.guitarpark.com/schema/crawler-config", elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED)
-package com.guitarpark.config;
+package com.paperpark.config.crawler;

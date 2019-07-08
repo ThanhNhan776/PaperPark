@@ -44,3 +44,23 @@
     color: white;
     padding: 5px;
 }
+
+.bg-super-easy {
+    background: #ACD8AA !important;
+}
+
+.bg-easy {
+    background: #F3E37C !important;
+}
+
+.bg-normal {
+    background: #F4AF4A !important;
+}
+
+.bg-hard {
+    background: #E88F8B !important;
+}
+
+.bg-super-hard {
+    background: #B993B9 !important;
+}

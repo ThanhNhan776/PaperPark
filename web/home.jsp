@@ -27,15 +27,28 @@
             <div class="columns">
                 <div class="column">
                     <h3 class="text-center">Gợi ý mô hình</h3>
-                    <form method="#section-search-result" onsubmit="return false">
+                    <form method="" onsubmit="return false">
+                        <div class="form-group">
+                            <label class="form-label" for="selectSkillLevel">Cấp độ kỹ năng của bạn</label>
+                            <select class="form-select bg-super-easy" id="selectSkillLevel" 
+                                    onchange="handleChangeLevel(this)">
+                                <option value="1" class="bg-super-easy">Mới bắt đầu</option>
+                                <option value="2" class="bg-easy">Tàm tạm</option>
+                                <option value="3" class="bg-normal">Quen thuộc</option>
+                                <option value="4" class="bg-hard">Thành thạo</option>
+                                <option value="5" class="bg-super-hard">Chuyên gia</option>
+                            </select>
+                        </div>
+                        
                         <div class="form-group">
                             <label class="form-label" for="selectDifficulty">Bạn muốn chọn mô hình có độ khó</label>
-                            <select class="form-select bg-primary" id="selectDifficulty">
-                                <option value="1">Cực dễ</option>
-                                <option value="2">Dễ</option>
-                                <option value="3">Trung bình</option>
-                                <option value="4">Khó</option>
-                                <option value="5">Cực khó</option>
+                            <select class="form-select bg-super-easy" id="selectDifficulty" 
+                                    onchange="handleChangeLevel(this)">
+                                <option value="1" class="bg-super-easy">Cực dễ</option>
+                                <option value="2" class="bg-easy">Dễ</option>
+                                <option value="3" class="bg-normal">Trung bình</option>
+                                <option value="4" class="bg-hard">Khó</option>
+                                <option value="5" class="bg-super-hard">Cực khó</option>
                             </select>
                         </div>
 
@@ -84,10 +97,6 @@
             <div class="loading loading-lg"></div>
         </div>
 
-<!--        <footer>
-            <div class="footer text-center">
-                <small>PaperPark Copyright © 2019 - Developed by NhanTT</small>
-            </div>
-        </footer>-->
+
     </body>
 </html>

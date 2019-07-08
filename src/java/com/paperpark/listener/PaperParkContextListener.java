@@ -5,22 +5,17 @@
  */
 package com.paperpark.listener;
 
-import com.guitarpark.config.CrawlerConfig;
+import com.paperpark.config.crawler.CrawlerConfig;
 import com.paperpark.categories_mapping.CategoryMappings;
+import com.paperpark.config.model.ModelEstimation;
 import com.paperpark.contants.ConfigConstants;
 import com.paperpark.crawler.papercraftmuseum.MuseumThread;
 import com.paperpark.crawler.kit168.Kit168Thread;
 import com.paperpark.utils.DBUtils;
-import java.io.File;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
 
 /**
  * Web application lifecycle listener.
@@ -28,24 +23,26 @@ import javax.xml.bind.Unmarshaller;
  * @author NhanTT
  */
 public class PaperParkContextListener implements ServletContextListener {
-
-    private static final String CATEGORY_MAPPING_FILE
-            = "WEB-INF\\configs\\category\\categories-mapping.xml";
-   
+    
     private static Kit168Thread kit168Thread;
     private static MuseumThread museumThread;
-
+    private static String realPath;
+    
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        loadCategoryMappings(sce);
+        realPath = sce.getServletContext().getRealPath("/");
         
-        String realPath = sce.getServletContext().getRealPath("/");
+        CategoryMappings categoryMappings = getCategoryMappings(realPath);
+        sce.getServletContext().setAttribute("CATEGORY_MAPPINGS", categoryMappings);
         
         CrawlerConfig crawlerConfig = CrawlerConfig.getCrawlerConfig(realPath);
         if (!crawlerConfig.isEnableCrawler()) {
             System.out.println("INFO Crawler has been disabled.");
             return;
         }
+        
+        ModelEstimation modelEstimation = getModelEstimationConfig(realPath);
+        sce.getServletContext().setAttribute("MODEL_ESTIMATION", modelEstimation);
         
         final ServletContext context = sce.getServletContext();
         kit168Thread = new Kit168Thread(context);
@@ -72,22 +69,15 @@ public class PaperParkContextListener implements ServletContextListener {
         }
     }
     
-    private void loadCategoryMappings(ServletContextEvent sce) {
-        try {
-            JAXBContext context = JAXBContext.newInstance(CategoryMappings.class);
-            Unmarshaller un = context.createUnmarshaller();
+    private CategoryMappings getCategoryMappings(String realPath) {
+        return CategoryMappings.getCategoryMappings(realPath);
+    }
+    
+    private ModelEstimation getModelEstimationConfig(String realPath) {
+        return ModelEstimation.getModelEstimation(realPath);
+    }
 
-            String realPath = sce.getServletContext().getRealPath("/");
-            String filePath = realPath + CATEGORY_MAPPING_FILE;
-
-            File file = new File(filePath);
-
-            CategoryMappings mappings = (CategoryMappings) un.unmarshal(file);
-            if (mappings != null) {
-                sce.getServletContext().setAttribute("CATEGORY_MAPPINGS", mappings);
-            }
-        } catch (JAXBException ex) {
-            Logger.getLogger(PaperParkContextListener.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    public static String getRealPath() {
+        return realPath;
     }
 }

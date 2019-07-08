@@ -72,11 +72,32 @@ function handleTimePickerChangeDays() {
     hoursPerDayEl.value = (hoursPerDay*1).toFixed(1);
 }
 
+function handleChangeLevel(element) {
+    switch (element.value) {
+        case '1':
+            element.className = element.className.replace(/bg-.*/, 'bg-super-easy');
+            break;
+        case '2':
+            element.className = element.className.replace(/bg-.*/, 'bg-easy');
+            break;
+        case '3':
+            element.className = element.className.replace(/bg-.*/, 'bg-normal');
+            break;
+        case '4':
+            element.className = element.className.replace(/bg-.*/, 'bg-hard');
+            break;
+        case '5':
+            element.className = element.className.replace(/bg-.*/, 'bg-super-hard');
+            break;
+    }
+}
+
 function suggestModels() {
+    let skillLevel = document.getElementById("selectSkillLevel").value;
     let difficulty = document.getElementById("selectDifficulty").value;
     let makeTime = document.getElementById("makeTimeTotalHours").value;
     
-    alert('difficulty: ' + difficulty + '\nmakeTime: ' + makeTime);
+    alert('skillLevel: ' + skillLevel + '\ndifficulty: ' + difficulty + '\nmakeTime: ' + makeTime);
     
     let div = document.getElementById("section-search-result");
     div.style.display = "block";

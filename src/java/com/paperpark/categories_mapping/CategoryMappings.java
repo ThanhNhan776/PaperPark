@@ -8,8 +8,14 @@
 
 package com.paperpark.categories_mapping;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -73,4 +79,26 @@ public class CategoryMappings {
         return this.categoryMapping;
     }
 
+    private static final String CATEGORY_MAPPING_FILE
+            = "WEB-INF\\configs\\category\\categories-mapping.xml";
+   
+    public synchronized static CategoryMappings getCategoryMappings(String realPath) {
+        try {
+            JAXBContext context = JAXBContext.newInstance(CategoryMappings.class);
+            Unmarshaller un = context.createUnmarshaller();
+            
+            String filePath = realPath + CATEGORY_MAPPING_FILE;
+            
+            File file = new File(filePath);
+            
+            CategoryMappings mappings = (CategoryMappings) un.unmarshal(file);
+            
+            if (mappings != null) {
+                return mappings;
+            }
+        } catch (JAXBException ex) {
+            Logger.getLogger(CategoryMappings.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return new CategoryMappings();
+    }
 }
