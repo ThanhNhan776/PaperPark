@@ -8,6 +8,7 @@ package com.paperpark.crawler.papercraftmuseum;
 import com.paperpark.contants.ConfigConstants;
 import com.paperpark.contants.URLConstants;
 import com.paperpark.crawler.BaseCrawler;
+import com.paperpark.crawler.BaseThread;
 import com.paperpark.dao.model.ModelDAO;
 import com.paperpark.dao.tag.TagDAO;
 import com.paperpark.entity.Category;
@@ -58,7 +59,7 @@ public class MuseumModelCrawler extends BaseCrawler implements Runnable {
             document = TextUtils.refineHtml(document);
             
             parseAndSaveModels(document);
-        } catch (IOException | XMLStreamException ex) {
+        } catch (IOException | XMLStreamException | InterruptedException ex) {
             Logger.getLogger(MuseumModelCrawler.class.getName())
                     .log(Level.SEVERE, null, ex);
         }
@@ -85,7 +86,7 @@ public class MuseumModelCrawler extends BaseCrawler implements Runnable {
     }
 
     private void parseAndSaveModels(String document)
-            throws UnsupportedEncodingException, XMLStreamException {
+            throws UnsupportedEncodingException, XMLStreamException, InterruptedException {
         XMLEventReader eventReader = parseStringToXMLEventReader(document);
         XMLEvent event;
         while (eventReader.hasNext()) {
@@ -102,6 +103,12 @@ public class MuseumModelCrawler extends BaseCrawler implements Runnable {
 
                     if (ConfigConstants.DEBUG) {
                         System.out.println("DEBUG saved model " + model.getLink());
+                    }
+                    
+                    synchronized (BaseThread.getInstance()) {
+                        while (BaseThread.isSuspended()) {
+                            BaseThread.getInstance().wait();
+                        }
                     }
                 }
             }

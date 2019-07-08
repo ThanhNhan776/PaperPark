@@ -31,10 +31,7 @@ public class PaperParkContextListener implements ServletContextListener {
 
     private static final String CATEGORY_MAPPING_FILE
             = "WEB-INF\\configs\\category\\categories-mapping.xml";
-    
-    private static final String CRAWLER_CONFIG_FILE
-            = "WEB-INF\\configs\\crawler\\crawler-config.xml";
-    
+   
     private static Kit168Thread kit168Thread;
     private static MuseumThread museumThread;
 
@@ -42,7 +39,9 @@ public class PaperParkContextListener implements ServletContextListener {
     public void contextInitialized(ServletContextEvent sce) {
         loadCategoryMappings(sce);
         
-        CrawlerConfig crawlerConfig = getCrawlerConfig(sce);
+        String realPath = sce.getServletContext().getRealPath("/");
+        
+        CrawlerConfig crawlerConfig = CrawlerConfig.getCrawlerConfig(realPath);
         if (!crawlerConfig.isEnableCrawler()) {
             System.out.println("INFO Crawler has been disabled.");
             return;
@@ -60,6 +59,9 @@ public class PaperParkContextListener implements ServletContextListener {
         if (ConfigConstants.DEBUG) {
             System.out.println("DEBUG Museum Thread start with Id = " + museumThread.getId());
         }
+        
+        context.setAttribute("KIT168_THREAD", kit168Thread);
+        context.setAttribute("MUSEUM_THREAD", museumThread);
     }
 
     @Override
@@ -87,24 +89,5 @@ public class PaperParkContextListener implements ServletContextListener {
         } catch (JAXBException ex) {
             Logger.getLogger(PaperParkContextListener.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
-    
-    private CrawlerConfig getCrawlerConfig(ServletContextEvent sce) {
-        try {
-            JAXBContext context = JAXBContext.newInstance(CrawlerConfig.class);
-            Unmarshaller un = context.createUnmarshaller();
-            
-            String realPath = sce.getServletContext().getRealPath("/");
-            String filePath = realPath + CRAWLER_CONFIG_FILE;
-            
-            File file = new File(filePath);
-            
-            CrawlerConfig config = (CrawlerConfig) un.unmarshal(file);
-            
-            return config;
-        } catch (JAXBException ex) {
-            Logger.getLogger(PaperParkContextListener.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return new CrawlerConfig();
     }
 }

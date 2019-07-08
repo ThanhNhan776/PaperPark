@@ -19,7 +19,7 @@ public class ConfigConstants {
      */
     public static final long CRAWLING_INTERVAL = TimeUnit.DAYS.toMillis(CRAWLING_DAY_INTERVAL);
     
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
     public static final boolean DEBUG_PRINT_DOC = false;
     
     /**

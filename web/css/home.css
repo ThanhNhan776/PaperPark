@@ -38,3 +38,9 @@
     height: 1000px!important;
     display: none;
 }
+
+.footer {
+    background: #4B71A4;
+    color: white;
+    padding: 5px;
+}

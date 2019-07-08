@@ -18,5 +18,8 @@
         <c:forEach items="${mappings}" var="mapping">
             <c:out value="${mapping.name}"/><br/>
         </c:forEach>
+
+        <c:set var="name" value="Piece of Heart &#038; Heart Container"/>
+        <h2>${name}</h2>
     </body>
 </html>

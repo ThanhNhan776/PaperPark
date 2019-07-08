@@ -7,6 +7,7 @@ package com.paperpark.crawler.kit168;
 
 import com.paperpark.contants.ConfigConstants;
 import com.paperpark.crawler.BaseCrawler;
+import com.paperpark.crawler.BaseThread;
 import com.paperpark.dao.model.ModelDAO;
 import com.paperpark.entity.Category;
 import com.paperpark.entity.Model;
@@ -71,8 +72,14 @@ public class Kit168ModelListCrawler extends BaseCrawler implements Runnable {
                 if (ConfigConstants.DEBUG) {
                     System.out.println("DEBUG saved model " + model.getLink());
                 }
+                
+                synchronized (BaseThread.getInstance()) {
+                    while (BaseThread.isSuspended()) {
+                        BaseThread.getInstance().wait();
+                    }
+                }
             }
-        } catch (IOException | XMLStreamException ex) {
+        } catch (IOException | XMLStreamException | InterruptedException ex) {
             Logger.getLogger(Kit168ModelListCrawler.class.getName())
                     .log(Level.SEVERE, null, ex);
         }

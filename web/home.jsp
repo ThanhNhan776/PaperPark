@@ -83,5 +83,11 @@
         <div id="section-search-result">
             <div class="loading loading-lg"></div>
         </div>
+
+<!--        <footer>
+            <div class="footer text-center">
+                <small>PaperPark Copyright © 2019 - Developed by NhanTT</small>
+            </div>
+        </footer>-->
     </body>
 </html>

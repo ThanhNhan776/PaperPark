@@ -10,14 +10,14 @@ package com.paperpark.crawler;
  * @author NhanTT
  */
 public class BaseThread extends Thread {
-    
+
     protected BaseThread() {
-        
+
     }
-    
+
     private static BaseThread instance;
     private static final Object LOCK = new Object();
-    
+
     public static BaseThread getInstance() {
         synchronized (LOCK) {
             if (instance == null) {
@@ -26,7 +26,7 @@ public class BaseThread extends Thread {
         }
         return instance;
     }
-    
+
     private static boolean suspended = false;
 
     public static boolean isSuspended() {
@@ -36,15 +36,17 @@ public class BaseThread extends Thread {
     public static void setSuspended(boolean suspended) {
         BaseThread.suspended = suspended;
     }
-    
+
     public void suspendThread() {
         setSuspended(true);
         System.out.println("Suspended");
     }
-    
-    public synchronized void resumeThread() {
-        setSuspended(false);
-        notifyAll();
+
+    public void resumeThread() {
+        synchronized (getInstance()) {
+            setSuspended(false);
+            getInstance().notifyAll();
+        }
         System.out.println("Resume");
     }
 }

@@ -8,6 +8,13 @@
 
 package com.guitarpark.config;
 
+import com.paperpark.listener.PaperParkContextListener;
+import java.io.File;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -61,5 +68,25 @@ public class CrawlerConfig {
     public void setEnableCrawler(boolean value) {
         this.enableCrawler = value;
     }
+    
+    private static final String CRAWLER_CONFIG_FILE
+            = "WEB-INF\\configs\\crawler\\crawler-config.xml";
 
+    public synchronized static CrawlerConfig getCrawlerConfig(String realPath) {
+        try {
+            JAXBContext context = JAXBContext.newInstance(CrawlerConfig.class);
+            Unmarshaller un = context.createUnmarshaller();
+            
+            String filePath = realPath + CRAWLER_CONFIG_FILE;
+            
+            File file = new File(filePath);
+            
+            CrawlerConfig config = (CrawlerConfig) un.unmarshal(file);
+            
+            return config;
+        } catch (JAXBException ex) {
+            Logger.getLogger(PaperParkContextListener.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return new CrawlerConfig();
+    }
 }
