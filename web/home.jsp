@@ -39,7 +39,7 @@
                                 <option value="5" class="bg-super-hard">Chuyên gia</option>
                             </select>
                         </div>
-                        
+
                         <div class="form-group">
                             <label class="form-label" for="selectDifficulty">Bạn muốn chọn mô hình có độ khó</label>
                             <select class="form-select bg-super-easy" id="selectDifficulty" 
@@ -56,17 +56,20 @@
                             <label class="form-label">Thời gian bạn có để làm mô hình</label>
                             <div class="input-group">
                                 <input type="number" class="form-input text-right" min="0"
-                                       id="makeTimeDay" onchange="handleTimePickerChangeDays()"/>
+                                       id="makeTimeDay" onchange="handleTimePickerChangeDays()"
+                                       value="0"/>
                                 <span class="input-group-addon addon-custom">ngày</span>
                             </div>
                             <div class="input-group">
                                 <input type="number" class="form-input text-right" min="0" max="24" step="0.1"
-                                       id="makeTimeHoursPerDay" onchange="handleTimePickerChangeHoursPerDay()"/>
+                                       id="makeTimeHoursPerDay" onchange="handleTimePickerChangeHoursPerDay()"
+                                       value="0"/>
                                 <span class="input-group-addon addon-custom">tiếng/ngày</span>
                             </div>
                             <div class="input-group">
                                 <input type="number" class="form-input text-right bg-primary" min="0" step="0.1"
-                                       id="makeTimeTotalHours" onchange="handleTimePickerChangeTotalHours()"/>
+                                       id="makeTimeTotalHours" onchange="handleTimePickerChangeTotalHours()"
+                                       value="0"/>
                                 <span class="input-group-addon addon-custom bg-primary-emphasis">tiếng</span>
                             </div>
                         </div>
@@ -93,10 +96,17 @@
                 </div>
             </div>
         </div>
+
+        <!-- Start result section -->
+
         <div id="section-search-result">
-            <div class="loading loading-lg"></div>
+            <div id="div-loading" class="loading loading-lg" style="display: none"></div>
+            <div id="search-result" style="display: none">
+
+            </div>
         </div>
 
-
+        <div class="container" id="paginationContainer">
+        </div>
     </body>
 </html>

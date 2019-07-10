@@ -11,7 +11,10 @@ import com.paperpark.config.model.ModelEstimation;
 import com.paperpark.contants.ConfigConstants;
 import com.paperpark.crawler.papercraftmuseum.MuseumThread;
 import com.paperpark.crawler.kit168.Kit168Thread;
+import com.paperpark.dao.model.ModelDAO;
+import com.paperpark.entity.Model;
 import com.paperpark.utils.DBUtils;
+import java.util.List;
 import javax.persistence.EntityManager;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
@@ -23,40 +26,45 @@ import javax.servlet.ServletContextListener;
  * @author NhanTT
  */
 public class PaperParkContextListener implements ServletContextListener {
-    
+
     private static Kit168Thread kit168Thread;
     private static MuseumThread museumThread;
     private static String realPath;
-    
+
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        realPath = sce.getServletContext().getRealPath("/");
-        
+        final ServletContext context = sce.getServletContext();
+
+        realPath = context.getRealPath("/");
+
         CategoryMappings categoryMappings = getCategoryMappings(realPath);
-        sce.getServletContext().setAttribute("CATEGORY_MAPPINGS", categoryMappings);
-        
+        context.setAttribute("CATEGORY_MAPPINGS", categoryMappings);
+
+        List<Model> models = getAllModels();
+        context.setAttribute("MODELS", models);
+        context.setAttribute("CACHE_TIME", System.currentTimeMillis());
+
         CrawlerConfig crawlerConfig = CrawlerConfig.getCrawlerConfig(realPath);
         if (!crawlerConfig.isEnableCrawler()) {
             System.out.println("INFO Crawler has been disabled.");
             return;
         }
-        
+
         ModelEstimation modelEstimation = getModelEstimationConfig(realPath);
-        sce.getServletContext().setAttribute("MODEL_ESTIMATION", modelEstimation);
-        
-        final ServletContext context = sce.getServletContext();
+        context.setAttribute("MODEL_ESTIMATION", modelEstimation);
+
         kit168Thread = new Kit168Thread(context);
         kit168Thread.start();
         if (ConfigConstants.DEBUG) {
             System.out.println("DEBUG Kit168 Thread start with Id = " + kit168Thread.getId());
         }
-        
+
         museumThread = new MuseumThread(context);
         museumThread.start();
         if (ConfigConstants.DEBUG) {
             System.out.println("DEBUG Museum Thread start with Id = " + museumThread.getId());
         }
-        
+
         context.setAttribute("KIT168_THREAD", kit168Thread);
         context.setAttribute("MUSEUM_THREAD", museumThread);
     }
@@ -68,16 +76,21 @@ public class PaperParkContextListener implements ServletContextListener {
             em.close();
         }
     }
-    
+
     private CategoryMappings getCategoryMappings(String realPath) {
         return CategoryMappings.getCategoryMappings(realPath);
     }
-    
+
     private ModelEstimation getModelEstimationConfig(String realPath) {
         return ModelEstimation.getModelEstimation(realPath);
     }
 
     public static String getRealPath() {
         return realPath;
+    }
+
+    private List<Model> getAllModels() {
+        ModelDAO modelDAO = ModelDAO.getInstance();
+        return modelDAO.getAllModels();
     }
 }

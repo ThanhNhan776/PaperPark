@@ -10,7 +10,6 @@ import com.paperpark.contants.ConfigConstants;
 import com.paperpark.crawler.kit168.Kit168Thread;
 import com.paperpark.crawler.papercraftmuseum.MuseumThread;
 import java.io.IOException;
-import java.io.PrintWriter;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;

@@ -8,6 +8,7 @@
 
 package com.paperpark.config.model;
 
+import com.paperpark.listener.PaperParkContextListener;
 import java.io.File;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -21,6 +22,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -46,27 +48,27 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ModelEstimation", propOrder = {
-    "difficultyEsitmation",
+    "difficultyEstimation",
     "defaultPartsPerSheet"
 })
 @XmlRootElement(name = "model-estimation")
 public class ModelEstimation {
 
-    @XmlElement(name = "difficulty-esitmation")
-    protected List<DifficultyEstimation> difficultyEsitmation;
+    @XmlElement(name = "difficulty-estimation")
+    protected List<DifficultyEstimation> difficultyEstimation;
     @XmlElement(name = "default-parts-per-sheet", required = true, defaultValue = "8.4")
     protected BigDecimal defaultPartsPerSheet;
 
     /**
-     * Gets the value of the difficultyEsitmation property.
+     * Gets the value of the difficultyEstimation property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the difficultyEsitmation property.
-     * 
-     * <p>
+     * This is why there is not a <CODE>set</CODE> method for the difficultyEstimation property.
+ 
+ <p>
      * For example, to add a new item, do as follows:
      * <pre>
      *    getDifficultyEsitmation().add(newItem);
@@ -79,11 +81,11 @@ public class ModelEstimation {
      * 
      * 
      */
-    public List<DifficultyEstimation> getDifficultyEsitmation() {
-        if (difficultyEsitmation == null) {
-            difficultyEsitmation = new ArrayList<DifficultyEstimation>();
+    public List<DifficultyEstimation> getDifficultyEstimation() {
+        if (difficultyEstimation == null) {
+            difficultyEstimation = new ArrayList<DifficultyEstimation>();
         }
-        return this.difficultyEsitmation;
+        return this.difficultyEstimation;
     }
 
     /**
@@ -130,4 +132,5 @@ public class ModelEstimation {
         }
         return new ModelEstimation();
     }
+    
 }

@@ -13,7 +13,7 @@ and open the template in the editor.
     <xs:element name="model-estimation" type="ModelEstimation"/>
     <xs:complexType name="ModelEstimation">
         <xs:sequence>
-            <xs:element name="difficulty-esitmation" type="DifficultyEstimation" minOccurs="0" maxOccurs="unbounded"/>
+            <xs:element name="difficulty-estimation" type="DifficultyEstimation" minOccurs="0" maxOccurs="unbounded"/>
             <xs:element name="default-parts-per-sheet" type="xs:decimal" default="8.4"/>
         </xs:sequence>
     </xs:complexType>

@@ -5,6 +5,8 @@
  */
 package com.paperpark.entity;
 
+import com.paperpark.config.model.ModelEstimation;
+import com.paperpark.listener.PaperParkContextListener;
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.Basic;
@@ -20,8 +22,13 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlType;
 
 /**
  *
@@ -29,6 +36,21 @@ import javax.xml.bind.annotation.XmlTransient;
  */
 @Entity
 @Table(name = "Model", catalog = "PaperPark", schema = "dbo")
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "Model", propOrder = {
+    "id",
+    "name",
+    "numOfSheets",
+    "numOfParts",
+    "difficulty",
+    "format",
+    "imageSrc",
+    "link",
+    "hasInstruction",
+    "estimateTime",
+    "tagCollection",
+    "categoryId"
+})
 @XmlRootElement
 @NamedQueries({
     @NamedQuery(name = "Model.findAll", query = "SELECT m FROM Model m")
@@ -40,7 +62,10 @@ import javax.xml.bind.annotation.XmlTransient;
     , @NamedQuery(name = "Model.findByFormat", query = "SELECT m FROM Model m WHERE m.format = :format")
     , @NamedQuery(name = "Model.findByImageSrc", query = "SELECT m FROM Model m WHERE m.imageSrc = :imageSrc")
     , @NamedQuery(name = "Model.findByLink", query = "SELECT m FROM Model m WHERE m.link = :link")
-    , @NamedQuery(name = "Model.findByHasInstruction", query = "SELECT m FROM Model m WHERE m.hasInstruction = :hasInstruction")})
+    , @NamedQuery(name = "Model.findByHasInstruction",
+            query = "SELECT m FROM Model m WHERE m.hasInstruction = :hasInstruction")
+    , @NamedQuery(name = "Model.getCountModels", query = "SELECT count(m) FROM Model m")
+})
 public class Model implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -48,23 +73,41 @@ public class Model implements Serializable {
     @Basic(optional = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "Id", nullable = false)
+    @XmlElement(name = "id")
     private Integer id;
+
     @Column(name = "Name", length = 100)
+    @XmlElement(name = "name")
     private String name;
+
     @Column(name = "NumOfSheets")
+    @XmlElement(name = "num-of-sheets")
     private Integer numOfSheets;
+
     @Column(name = "NumOfParts")
+    @XmlElement(name = "num-of-parts")
     private Integer numOfParts;
+
     @Column(name = "Difficulty")
+    @XmlElement(name = "difficulty")
     private Integer difficulty;
+
     @Column(name = "Format", length = 10)
+    @XmlElement(name = "format")
     private String format;
+
     @Column(name = "ImageSrc", length = 500)
+    @XmlElement(name = "image-src")
     private String imageSrc;
+
     @Column(name = "Link", length = 500)
+    @XmlElement(name = "link")
     private String link;
+
     @Column(name = "HasInstruction")
+    @XmlElement(name = "has-instruction")
     private Boolean hasInstruction;
+
     @JoinTable(name = "Model_Tag_Mapping", joinColumns = {
         @JoinColumn(name = "ModelId", referencedColumnName = "Id", nullable = false)}, inverseJoinColumns = {
         @JoinColumn(name = "TagId", referencedColumnName = "Id", nullable = false)})
@@ -73,6 +116,10 @@ public class Model implements Serializable {
     @JoinColumn(name = "CategoryId", referencedColumnName = "Id")
     @ManyToOne
     private Category categoryId;
+    
+    @Transient
+    @XmlElement(name = "estimate-time")
+    private Double estimateTime;
 
     public Model() {
     }
@@ -81,8 +128,8 @@ public class Model implements Serializable {
         this.id = id;
     }
 
-    public Model(Integer id, String name, Integer numOfSheets, Integer numOfParts, 
-            Integer difficulty, String format, String imageSrc, String link, 
+    public Model(Integer id, String name, Integer numOfSheets, Integer numOfParts,
+            Integer difficulty, String format, String imageSrc, String link,
             Boolean hasInstruction, Collection<Tag> tagCollection, Category categoryId) {
         this.id = id;
         this.name = name;
@@ -96,7 +143,7 @@ public class Model implements Serializable {
         this.tagCollection = tagCollection;
         this.categoryId = categoryId;
     }
-    
+
     public Integer getId() {
         return id;
     }
@@ -210,5 +257,38 @@ public class Model implements Serializable {
     public String toString() {
         return "com.paperpark.entity.Model[ id=" + id + " ]";
     }
-
+    
+    @Transient
+    public Double getEstimateTime() {
+        return estimateTime;
     }
+
+    public void setEstimateTime(Double estimateTime) {
+        this.estimateTime = estimateTime;
+    }
+
+    public void estimateMakingTime(ModelEstimation estimation, int skillLevel) {
+        double standardPartsPerSheet = estimation.getDefaultPartsPerSheet().doubleValue();
+
+        double partsPerSheet = standardPartsPerSheet;
+
+        if (numOfSheets != null && numOfSheets > 0 && numOfParts != null && numOfParts > 0) {
+            partsPerSheet = 1.0 * numOfParts / numOfSheets;
+        }
+
+        this.estimateTime = getEstimateMakingTime(skillLevel, difficulty,
+                partsPerSheet, standardPartsPerSheet, numOfSheets);
+    }
+
+    private Double getEstimateMakingTime(int skillLevel, int difficulty,
+            double partsPerSheet, double standardPartsPerSheet, int numOfSheets) {
+
+        Double hoursPerSheet = 0.75 * (difficulty / (0.625 * skillLevel + 1.875))
+                * (partsPerSheet / standardPartsPerSheet);
+
+        Double totalTime = hoursPerSheet * numOfSheets;
+
+        return totalTime;
+    }
+
+}

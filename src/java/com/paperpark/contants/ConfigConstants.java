@@ -26,4 +26,9 @@ public class ConfigConstants {
      * reduce 1/CRAWL_THREAD_REDUCE number of crawling threads
      */
     public static final int CRAWL_THREAD_REDUCE = 2;
+    
+    /**
+     * cache models timeout in milliseconds
+     */
+    public static final long CACHE_MODELS_TIMEOUT = 24*60*60*1000; 
 }

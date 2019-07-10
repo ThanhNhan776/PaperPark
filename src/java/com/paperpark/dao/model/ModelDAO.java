@@ -10,6 +10,7 @@ import com.paperpark.config.model.ModelEstimation;
 import com.paperpark.dao.BaseDAO;
 import com.paperpark.entity.Model;
 import com.paperpark.utils.DBUtils;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -89,6 +90,7 @@ public class ModelDAO extends BaseDAO<Model, Integer> {
                 if (numOfParts != null && numOfParts > 0) {
                     Double partsPerSheet = 1.0 * numOfParts / numOfSheets;
                     Integer difficulty = estimateDifficulty(partsPerSheet, modelEstimation);
+
                     model.setDifficulty(difficulty);
                 } else {
                     Integer difficulty = estimateDifficulty(numOfSheets, modelEstimation);
@@ -99,14 +101,14 @@ public class ModelDAO extends BaseDAO<Model, Integer> {
     }
 
     private synchronized Integer estimateDifficulty(Double partsPerSheet, ModelEstimation estimation) {
-        DifficultyEstimation lowestDifficulty = estimation.getDifficultyEsitmation().get(0);
+        DifficultyEstimation lowestDifficulty = estimation.getDifficultyEstimation().get(0);
 
         if (partsPerSheet <= lowestDifficulty.getMaxPartsPerSheet().doubleValue()) {
             return lowestDifficulty.getDifficulty().intValue();
         }
 
-        for (int i = 1; i < estimation.getDifficultyEsitmation().size(); ++i) {
-            DifficultyEstimation de = estimation.getDifficultyEsitmation().get(i);
+        for (int i = 1; i < estimation.getDifficultyEstimation().size(); ++i) {
+            DifficultyEstimation de = estimation.getDifficultyEstimation().get(i);
             if (partsPerSheet <= de.getMaxPartsPerSheet().doubleValue()) {
                 return de.getDifficulty().intValue();
             }
@@ -116,14 +118,14 @@ public class ModelDAO extends BaseDAO<Model, Integer> {
     }
 
     private synchronized Integer estimateDifficulty(Integer numOfSheets, ModelEstimation estimation) {
-        DifficultyEstimation lowestDifficulty = estimation.getDifficultyEsitmation().get(0);
+        DifficultyEstimation lowestDifficulty = estimation.getDifficultyEstimation().get(0);
 
         if (numOfSheets <= lowestDifficulty.getMaxNumberOfSheets().intValue()) {
             return lowestDifficulty.getDifficulty().intValue();
         }
 
-        for (int i = 1; i < estimation.getDifficultyEsitmation().size(); ++i) {
-            DifficultyEstimation de = estimation.getDifficultyEsitmation().get(i);
+        for (int i = 1; i < estimation.getDifficultyEstimation().size(); ++i) {
+            DifficultyEstimation de = estimation.getDifficultyEstimation().get(i);
             if (numOfSheets <= de.getMaxNumberOfSheets().intValue()) {
                 return de.getDifficulty().intValue();
             }
@@ -131,14 +133,45 @@ public class ModelDAO extends BaseDAO<Model, Integer> {
         return 0;
     }
 
-    private synchronized Double estimateMakingtime(int skillLevel, int difficulty,
-            int partsPerSheet, int standardPartsPerSheet, int numOfSheets) {
+    public long getCountModels() {
+        EntityManager em = DBUtils.getEntityManager();
+        try {
+            EntityTransaction transaction = em.getTransaction();
+            transaction.begin();
+            long count = (long) em.createNamedQuery("Model.getCountModels").getSingleResult();
+            transaction.commit();
 
-        Double hoursPerSheet = 0.75 * (difficulty / (0.625 * skillLevel + 1.875))
-                * (partsPerSheet / standardPartsPerSheet);
+            return count;
+        } catch (Exception e) {
+            Logger.getLogger(ModelDAO.class.getName()).log(Level.SEVERE, null, e);
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+        }
+        return 0;
+    }
 
-        Double totalTime = hoursPerSheet * numOfSheets;
-
-        return totalTime;
+    public List<Model> getAllModels() {
+        EntityManager em = DBUtils.getEntityManager();
+        try {
+            EntityTransaction transaction = em.getTransaction();
+            transaction.begin();
+            List<Model> models = em.createNamedQuery("Model.findAll").getResultList();
+            transaction.commit();
+            
+            if (models == null) {
+                models = new ArrayList<>();
+            }
+            
+            return models;
+        } catch (Exception e) {
+            Logger.getLogger(ModelDAO.class.getName()).log(Level.SEVERE, null, e);
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+        }
+        return new ArrayList<>();
     }
 }
