@@ -166,7 +166,8 @@ function applyXslToResultModels(resultModels, xsl) {
     div.innerHTML = '<h4 class="text-italic text-center">Tìm thấy ' + countModels + ' kết quả.</h4>';
     div.appendChild(resultHtml);
 
-    initResultPaging(Math.ceil(1.0 * countModels / pageSize));
+    _pageCount = Math.ceil(1.0 * countModels / pageSize);
+    initResultPaging(_pageCount);
 
     hideLoadingAnimation();
     showSearchResult();
@@ -202,7 +203,7 @@ function handleResultModelsEmpty() {
     showSearchResult();
 }
 
-var currentPage;
+var _currentPage, _pageCount;
 
 function initResultPaging(pageCount) {
     let paginationContainer = document.getElementById('paginationContainer');
@@ -218,30 +219,30 @@ function initResultPaging(pageCount) {
 
     let firstPage = document.getElementById('result-page-1');
     firstPage.className = firstPage.className.replace(/hide/, 'show-flex');
-    currentPage = 1;
+    _currentPage = 1;
 }
 
 function createPagingElement(pageCount) {
     let pagingEl = '<ul class="pagination">';
     
     pagingEl += '<li class="page-item disabled" id="pagePrevious">'
-            + '<a href="#" tabindex="-1">Trước</a>'
+            + '<a href="javascript:handlePagePreviousClick();" tabindex="-1">Trước</a>'
             + '</li>';
 
-    pagingEl += '<li class="page-item active">'
-            + '<a href="#">1</a>'
+    pagingEl += '<li class="page-item active" id="page-item-1">'
+            + '<a href="javascript:handlePageClick(1);">1</a>'
             + '</li>';
 
     for (let i = 2; i <= pageCount; ++i) {
-        pagingEl += '<li class="page-item">'
-                + '<a href="#">' + i + '</a>'
+        pagingEl += '<li class="page-item" id="page-item-' + i + '">'
+                + '<a href="javascript:handlePageClick(' + i + ');">' + i + '</a>'
                 + '</li>';
     }
 
     pagingEl += (pageCount > 1
             ? '<li id="pageNext" class="page-item">'
             : '<li id="pageNext" class="page-item disabled">')
-            + '<a href="#">Sau</a>'
+            + '<a href="javascript:handlePageNextClick();">Sau</a>'
             + '</li>';
     
     pagingEl += '</ul>';
@@ -250,13 +251,58 @@ function createPagingElement(pageCount) {
 }
 
 function handlePageClick(pageIndex) {
-
+    if (pageIndex < 1 || pageIndex > _pageCount || pageIndex === _currentPage) {
+        return;
+    }
+    
+    activePageItem('page-item-' + pageIndex);
+    showResultPage('result-page-' + pageIndex);
+    
+    _currentPage = pageIndex;
+    
+    if (pageIndex === 1) {
+        disablePageItem('pagePrevious');
+    }
+    if (pageIndex === _pageCount) {
+        disablePageItem('pageNext');
+    }
+    
+    return false;
 }
 
 function handlePagePreviousClick() {
-    handlePageClick(currentPage - 1);
+    handlePageClick(_currentPage - 1);
+    return false;
 }
 
 function handlePageNextClick() {
-    handlePageClick(currentPage + 1);
+    handlePageClick(_currentPage + 1);
+    return false;
+}
+
+function activePageItem(pageId) {
+    let page = document.getElementById('page-item-' + _currentPage);
+    page.className = page.className.replace(/active/, '');
+    
+    page = document.getElementById(pageId);
+    page.className += ' active';
+    
+    page = document.getElementById('pagePrevious');
+    page.className = page.className.replace(/disabled/, '');
+    
+    page = document.getElementById('pageNext');
+    page.className = page.className.replace(/disabled/, '');
+}
+
+function showResultPage(pageId) {
+    let page = document.getElementById('result-page-' + _currentPage);
+    page.className = page.className.replace(/show-flex/, 'hide');
+    
+    page = document.getElementById(pageId);
+    page.className = page.className.replace(/hide/, 'show-flex');
+}
+
+function disablePageItem(pageId) {
+    let page = document.getElementById(pageId);
+    page.className += ' disabled';
 }
