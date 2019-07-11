@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.paperpark.controller;
+package com.paperpark.servlet;
 
 import com.paperpark.config.model.ModelEstimation;
 import com.paperpark.contants.ConfigConstants;
@@ -56,8 +56,10 @@ public class SuggestModelServlet extends HttpServlet {
             int difficulty = Integer.parseInt(difficultyStr);
             double totalHours = Double.parseDouble(totalHoursStr);
 
+            ModelDAO modelDAO = ModelDAO.getInstance();
+            
             HttpSession session = request.getSession();
-            List<Model> models = getAllModels(session, skillLevel);
+            List<Model> models = modelDAO.getAllModels(session, skillLevel);
 
             List<Model> foundModels = new ArrayList<>();
             models.forEach((model) -> {
@@ -79,56 +81,6 @@ public class SuggestModelServlet extends HttpServlet {
             Logger.getLogger(SuggestModelServlet.class.getName())
                     .log(Level.SEVERE, null, e);
         }
-    }
-
-    private List<Model> getAllModels(HttpSession session, int skillLevel) {
-        List<Model> models = (List<Model>) session.getAttribute("MODELS");
-        Long cacheTime = (Long) session.getAttribute("CACHE_TIME");
-
-        long now = System.currentTimeMillis();
-
-        ServletContext context = session.getServletContext();
-        
-        if (models == null || cacheTime == null
-                || (now - cacheTime > ConfigConstants.CACHE_MODELS_TIMEOUT)) {
-
-            models = getAlllModels(session.getServletContext());
-            refineModels(context, models, skillLevel);
-
-            session.setAttribute("MODELS", models);
-            session.setAttribute("SKILL_LEVEL", skillLevel);
-            session.setAttribute("CACHE_TIME", now);
-        }
-
-        Integer cachedSkillLevel = (Integer) session.getAttribute("SKILL_LEVEL");
-        if (cachedSkillLevel == null || cachedSkillLevel != skillLevel) {
-            refineModels(context, models, skillLevel);
-
-            session.setAttribute("MODELS", models);
-            session.setAttribute("SKILL_LEVEL", skillLevel);
-            session.setAttribute("CACHE_TIME", now);
-        }
-
-        return models;
-    }
-
-    private List<Model> getAlllModels(ServletContext context) {
-        List<Model> models = (List<Model>) context.getAttribute("MODELS");
-        Long cacheTime = (Long) context.getAttribute("CACHE_TIME");
-
-        long now = System.currentTimeMillis();
-
-        if (models == null || cacheTime == null
-                || (now - cacheTime > ConfigConstants.CACHE_MODELS_TIMEOUT)) {
-
-            ModelDAO modelDAO = ModelDAO.getInstance();
-            models = modelDAO.getAllModels();
-
-            context.setAttribute("MODELS", models);
-            context.setAttribute("CACHE_TIME", now);
-        }
-
-        return models;
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -169,19 +121,5 @@ public class SuggestModelServlet extends HttpServlet {
     public String getServletInfo() {
         return "Short description";
     }// </editor-fold>
-
-    private void refineModels(ServletContext context, List<Model> models, int skillLevel) {
-        ModelEstimation estimation = (ModelEstimation) context.getAttribute("MODEL_ESTIMATION");
-        if (estimation == null) {
-            estimation = ModelEstimation.getModelEstimation(context.getRealPath("/"));
-            context.setAttribute("MODEL_ESTIMATION", estimation);
-        }
-        
-        final ModelEstimation me = estimation;
-        
-        models.forEach((model) -> {
-            model.estimateMakingTime(me, skillLevel);
-        });
-    }
 
 }

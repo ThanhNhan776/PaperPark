@@ -55,7 +55,7 @@ import javax.xml.bind.annotation.XmlType;
 @NamedQueries({
     @NamedQuery(name = "Model.findAll", query = "SELECT m FROM Model m")
     , @NamedQuery(name = "Model.findById", query = "SELECT m FROM Model m WHERE m.id = :id")
-    , @NamedQuery(name = "Model.findByName", query = "SELECT m FROM Model m WHERE m.name = :name")
+    , @NamedQuery(name = "Model.findByName", query = "SELECT m FROM Model m WHERE m.name LIKE :name")
     , @NamedQuery(name = "Model.findByNumOfSheets", query = "SELECT m FROM Model m WHERE m.numOfSheets = :numOfSheets")
     , @NamedQuery(name = "Model.findByNumOfParts", query = "SELECT m FROM Model m WHERE m.numOfParts = :numOfParts")
     , @NamedQuery(name = "Model.findByDifficulty", query = "SELECT m FROM Model m WHERE m.difficulty = :difficulty")

@@ -93,15 +93,6 @@ function handleChangeLevel(element) {
 }
 
 function suggestModels() {
-    showLoadingAnimation();
-    hideSearchResult();
-
-    let div = document.getElementById("section-search-result");
-    div.style.display = 'block';
-    div.scrollIntoView({
-        behavior: 'smooth'
-    });
-
     let skillLevel = document.getElementById("selectSkillLevel").value;
     let difficulty = document.getElementById("selectDifficulty").value;
     let makeTime = document.getElementById("makeTimeTotalHours").value;
@@ -109,9 +100,35 @@ function suggestModels() {
     let url = 'suggestModel';
     let params = 'skillLevel=' + skillLevel + '&difficulty=' + difficulty
             + '&totalHours=' + makeTime;
+    
+    startSearching(url + '?' + params);
+}
 
+function searchModels() {
+    showLoadingAnimation();
+    hideSearchResult();
+   
+    let modelName = document.getElementById("modelName").value;
+
+    let url = 'searchModel';
+    let params = 'modelName=' + modelName;
+    
+    startSearching(url + '?' + params);
+}
+
+function startSearching(url) {
+    showLoadingAnimation();
+    hideSearchResult();
+    
+    let div = document.getElementById('section-search-result');
+    div.style.display = 'block';
+    div.scrollIntoView({
+        behavior: 'smooth'
+    });
+    
+    // ajax
     let xhr = new XMLHttpRequest();
-    xhr.open('GET', url + '?' + params, true);
+    xhr.open('GET', url, true);
     xhr.onreadystatechange = () => {
         if (xhr.readyState === 4 && xhr.status === 200) {
             let xml = xhr.responseXML;
@@ -122,21 +139,8 @@ function suggestModels() {
             }
         }
     };
-
+    
     xhr.send(null);
-}
-
-function searchModels() {
-    let modelName = document.getElementById("modelName").value;
-    alert('modelName: ' + modelName);
-
-    let div = document.getElementById("section-search-result");
-    div.style.display = 'block';
-    div.scrollIntoView({
-        behavior: 'smooth'
-    });
-
-
 }
 
 function handleResultModelsReceived(resultDocument) {
@@ -155,7 +159,7 @@ function applyXslToResultModels(resultModels, xsl) {
     let xsltProcessor = new XSLTProcessor();
     xsltProcessor.importStylesheet(xsl);
 
-    let pageSize = 30;
+    let pageSize = 18;
     xsltProcessor.setParameter(null, 'pageSize', pageSize);
 
     let resultHtml = xsltProcessor.transformToFragment(resultModels, document);

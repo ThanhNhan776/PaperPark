@@ -7,6 +7,7 @@ package com.paperpark.dao.model;
 
 import com.paperpark.config.model.DifficultyEstimation;
 import com.paperpark.config.model.ModelEstimation;
+import com.paperpark.contants.ConfigConstants;
 import com.paperpark.dao.BaseDAO;
 import com.paperpark.entity.Model;
 import com.paperpark.utils.DBUtils;
@@ -17,6 +18,7 @@ import java.util.logging.Logger;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.servlet.ServletContext;
+import javax.servlet.http.HttpSession;
 
 /**
  *
@@ -57,6 +59,29 @@ public class ModelDAO extends BaseDAO<Model, Integer> {
             }
         } catch (Exception e) {
             Logger.getLogger(ModelDAO.class.getName()).log(Level.SEVERE, null, e);
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+        }
+        return null;
+    }
+    
+    public List<Model> getModelsByName(String name) {
+        EntityManager em = DBUtils.getEntityManager();
+        try {
+            EntityTransaction transaction = em.getTransaction();
+            transaction.begin();
+            
+            List<Model> models = em.createNamedQuery("Model.findByName")
+                    .setParameter("name", "%" + name + "%")
+                    .getResultList();
+            
+            transaction.commit();
+            
+            return models;
+        } catch (Exception e) {
+            Logger.getLogger(ModelDAO.class.getName()).log(Level.SEVERE, null, e); 
         } finally {
             if (em != null) {
                 em.close();
@@ -152,6 +177,10 @@ public class ModelDAO extends BaseDAO<Model, Integer> {
         return 0;
     }
 
+    /**
+     * get all models directly from db
+     * @return models
+     */
     public List<Model> getAllModels() {
         EntityManager em = DBUtils.getEntityManager();
         try {
@@ -173,5 +202,86 @@ public class ModelDAO extends BaseDAO<Model, Integer> {
             }
         }
         return new ArrayList<>();
+    }
+    
+    /**
+     * get cached models from session scope
+     * @param session
+     * @param skillLevel
+     * @return 
+     */
+    public List<Model> getAllModels(HttpSession session, int skillLevel) {
+        List<Model> models = (List<Model>) session.getAttribute("MODELS");
+        Long cacheTime = (Long) session.getAttribute("CACHE_TIME");
+
+        long now = System.currentTimeMillis();
+
+        ServletContext context = session.getServletContext();
+        
+        if (models == null || cacheTime == null
+                || (now - cacheTime > ConfigConstants.CACHE_MODELS_TIMEOUT)) {
+
+            models = getAllModels(session.getServletContext());
+            estimateModelsMakingTime(context, models, skillLevel);
+
+            session.setAttribute("MODELS", models);
+            session.setAttribute("SKILL_LEVEL", skillLevel);
+            session.setAttribute("CACHE_TIME", now);
+        }
+
+        Integer cachedSkillLevel = (Integer) session.getAttribute("SKILL_LEVEL");
+        if (cachedSkillLevel == null || cachedSkillLevel != skillLevel) {
+            estimateModelsMakingTime(context, models, skillLevel);
+
+            session.setAttribute("MODELS", models);
+            session.setAttribute("SKILL_LEVEL", skillLevel);
+            session.setAttribute("CACHE_TIME", now);
+        }
+
+        return models;
+    }
+    
+    /**
+     * get cached models from application scope
+     * @param context
+     * @return 
+     */
+    public List<Model> getAllModels(ServletContext context) {
+        List<Model> models = (List<Model>) context.getAttribute("MODELS");
+        Long cacheTime = (Long) context.getAttribute("CACHE_TIME");
+
+        long now = System.currentTimeMillis();
+
+        if (models == null || cacheTime == null
+                || (now - cacheTime > ConfigConstants.CACHE_MODELS_TIMEOUT)) {
+
+            ModelDAO modelDAO = ModelDAO.getInstance();
+            models = modelDAO.getAllModels();
+
+            context.setAttribute("MODELS", models);
+            context.setAttribute("CACHE_TIME", now);
+        }
+
+        return models;
+    }
+    
+    /**
+     * estimate making time for models
+     * @param context
+     * @param models
+     * @param skillLevel 
+     */
+    private void estimateModelsMakingTime(ServletContext context, List<Model> models, int skillLevel) {
+        ModelEstimation estimation = (ModelEstimation) context.getAttribute("MODEL_ESTIMATION");
+        if (estimation == null) {
+            estimation = ModelEstimation.getModelEstimation(context.getRealPath("/"));
+            context.setAttribute("MODEL_ESTIMATION", estimation);
+        }
+        
+        final ModelEstimation me = estimation;
+        
+        models.forEach((model) -> {
+            model.estimateMakingTime(me, skillLevel);
+        });
     }
 }
