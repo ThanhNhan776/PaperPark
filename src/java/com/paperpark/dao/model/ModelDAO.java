@@ -96,6 +96,7 @@ public class ModelDAO extends BaseDAO<Model, Integer> {
             refineModel(context, model);
             return create(model);
         }
+        refineModel(context, model);
         model.setId(existedModel.getId());
         return update(model);
     }
@@ -253,7 +254,8 @@ public class ModelDAO extends BaseDAO<Model, Integer> {
         long now = System.currentTimeMillis();
 
         if (models == null || cacheTime == null
-                || (now - cacheTime > ConfigConstants.CACHE_MODELS_TIMEOUT)) {
+                || (now - cacheTime > ConfigConstants.CACHE_MODELS_TIMEOUT)
+                || models.size() < getCountModels()) {
 
             ModelDAO modelDAO = ModelDAO.getInstance();
             models = modelDAO.getAllModels();

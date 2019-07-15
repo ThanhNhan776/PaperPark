@@ -30,25 +30,8 @@ public class MiscTest {
     private static final String realPath = "E:\\Java\\Summer_2019\\PaperPark\\web\\";
 
     public static void main(String[] args) {
-        try {
-            TransformerFactory factory = TransformerFactory.newInstance();
-            
-            StreamSource xslFile = new StreamSource("web/xsl/result-models.xsl");
-            Transformer transformer = factory.newTransformer(xslFile);
-            
-            StreamSource xmlFile = new StreamSource("web/xsl/sample-models.xml");
-            StreamResult htmlFile = new StreamResult("web/xsl/result.html");
-            
-            Integer price = 3;
-            transformer.setParameter("pageSize", price);
-            
-            transformer.transform(xmlFile, htmlFile);
-            System.out.println("done");
-            
-        } catch (TransformerConfigurationException ex) {
-            Logger.getLogger(MiscTest.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (TransformerException ex) {
-            Logger.getLogger(MiscTest.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        String s = "hello&amp;#1345;s world&amp;#3544;";
+        s = s.replace("&amp;", "&");
+        System.out.println(s);
     }
 }

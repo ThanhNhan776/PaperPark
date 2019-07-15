@@ -43,6 +43,9 @@ public class PaperParkContextListener implements ServletContextListener {
         List<Model> models = getAllModels();
         context.setAttribute("MODELS", models);
         context.setAttribute("CACHE_TIME", System.currentTimeMillis());
+        if (models != null) {
+            System.out.println("INFO models cached with " + models.size() + " models at " + System.currentTimeMillis());
+        }
 
         CrawlerConfig crawlerConfig = CrawlerConfig.getCrawlerConfig(realPath);
         if (!crawlerConfig.isEnableCrawler()) {

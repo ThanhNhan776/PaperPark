@@ -1,3 +1,6 @@
+use PaperPark
+go
+
 delete from Model_Tag_Mapping
 go
 

@@ -258,7 +258,6 @@ public class Model implements Serializable {
         return "com.paperpark.entity.Model[ id=" + id + " ]";
     }
     
-    @Transient
     public Double getEstimateTime() {
         return estimateTime;
     }

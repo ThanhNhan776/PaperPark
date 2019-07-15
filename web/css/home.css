@@ -79,3 +79,11 @@ body {
 .column {
     padding: 1em;
 }
+
+.pagination {
+    display: block;
+}
+
+.pagination .page-item {
+    float: left;
+}

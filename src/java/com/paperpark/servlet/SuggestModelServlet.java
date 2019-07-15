@@ -71,7 +71,6 @@ public class SuggestModelServlet extends HttpServlet {
 
             String resultModelsXml = JAXBUtils.marshall(resultModels);
 
-//            System.out.println("DEBUG XML: \n" + resultModelsXml);
             writer.write(resultModelsXml);
             response.setStatus(HttpServletResponse.SC_OK);
         } catch (NumberFormatException e) {
