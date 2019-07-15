@@ -66,22 +66,45 @@ public class ModelDAO extends BaseDAO<Model, Integer> {
         }
         return null;
     }
-    
+
     public List<Model> getModelsByName(String name) {
         EntityManager em = DBUtils.getEntityManager();
         try {
             EntityTransaction transaction = em.getTransaction();
             transaction.begin();
-            
+
             List<Model> models = em.createNamedQuery("Model.findByName")
                     .setParameter("name", "%" + name + "%")
                     .getResultList();
-            
+
             transaction.commit();
-            
+
             return models;
         } catch (Exception e) {
-            Logger.getLogger(ModelDAO.class.getName()).log(Level.SEVERE, null, e); 
+            Logger.getLogger(ModelDAO.class.getName()).log(Level.SEVERE, null, e);
+        } finally {
+            if (em != null) {
+                em.close();
+            }
+        }
+        return null;
+    }
+
+    public Model getModelById(int id) {
+        EntityManager em = DBUtils.getEntityManager();
+        try {
+            EntityTransaction transaction = em.getTransaction();
+            transaction.begin();
+
+            Model model = em.createNamedQuery("Model.findById", Model.class)
+                    .setParameter("id", id)
+                    .getSingleResult();
+
+            transaction.commit();
+
+            return model;
+        } catch (Exception e) {
+            Logger.getLogger(ModelDAO.class.getName()).log(Level.SEVERE, null, e);
         } finally {
             if (em != null) {
                 em.close();
@@ -180,6 +203,7 @@ public class ModelDAO extends BaseDAO<Model, Integer> {
 
     /**
      * get all models directly from db
+     *
      * @return models
      */
     public List<Model> getAllModels() {
@@ -189,11 +213,11 @@ public class ModelDAO extends BaseDAO<Model, Integer> {
             transaction.begin();
             List<Model> models = em.createNamedQuery("Model.findAll").getResultList();
             transaction.commit();
-            
+
             if (models == null) {
                 models = new ArrayList<>();
             }
-            
+
             return models;
         } catch (Exception e) {
             Logger.getLogger(ModelDAO.class.getName()).log(Level.SEVERE, null, e);
@@ -204,12 +228,13 @@ public class ModelDAO extends BaseDAO<Model, Integer> {
         }
         return new ArrayList<>();
     }
-    
+
     /**
      * get cached models from session scope
+     *
      * @param session
      * @param skillLevel
-     * @return 
+     * @return
      */
     public List<Model> getAllModels(HttpSession session, int skillLevel) {
         List<Model> models = (List<Model>) session.getAttribute("MODELS");
@@ -218,7 +243,7 @@ public class ModelDAO extends BaseDAO<Model, Integer> {
         long now = System.currentTimeMillis();
 
         ServletContext context = session.getServletContext();
-        
+
         if (models == null || cacheTime == null
                 || (now - cacheTime > ConfigConstants.CACHE_MODELS_TIMEOUT)) {
 
@@ -241,11 +266,12 @@ public class ModelDAO extends BaseDAO<Model, Integer> {
 
         return models;
     }
-    
+
     /**
      * get cached models from application scope
+     *
      * @param context
-     * @return 
+     * @return
      */
     public List<Model> getAllModels(ServletContext context) {
         List<Model> models = (List<Model>) context.getAttribute("MODELS");
@@ -266,12 +292,13 @@ public class ModelDAO extends BaseDAO<Model, Integer> {
 
         return models;
     }
-    
+
     /**
      * estimate making time for models
+     *
      * @param context
      * @param models
-     * @param skillLevel 
+     * @param skillLevel
      */
     private void estimateModelsMakingTime(ServletContext context, List<Model> models, int skillLevel) {
         ModelEstimation estimation = (ModelEstimation) context.getAttribute("MODEL_ESTIMATION");
@@ -279,9 +306,9 @@ public class ModelDAO extends BaseDAO<Model, Integer> {
             estimation = ModelEstimation.getModelEstimation(context.getRealPath("/"));
             context.setAttribute("MODEL_ESTIMATION", estimation);
         }
-        
+
         final ModelEstimation me = estimation;
-        
+
         models.forEach((model) -> {
             model.estimateMakingTime(me, skillLevel);
         });

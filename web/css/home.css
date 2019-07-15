@@ -38,6 +38,11 @@ body {
     display: none;
 }
 
+#section-model-detail {
+    margin: 0 auto;
+    margin-top: 20px;
+}
+
 #div-loading {
     height: 100vh !important;
 }
@@ -86,4 +91,8 @@ body {
 
 .pagination .page-item {
     float: left;
+}
+
+.no-border {
+    border: none!important;
 }

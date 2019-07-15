@@ -7,7 +7,7 @@ package com.paperpark.servlet;
 
 import com.paperpark.dao.model.ModelDAO;
 import com.paperpark.entity.Model;
-import com.paperpark.models.ResultModels;
+import com.paperpark.models.ModelList;
 import com.paperpark.utils.JAXBUtils;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -47,10 +47,10 @@ public class SearchModelServlet extends HttpServlet {
             
             List<Model> models = modelDAO.getModelsByName(modelName);
             
-            ResultModels resultModels = new ResultModels();
-            resultModels.setResultModel(models);
+            ModelList resultModels = new ModelList();
+            resultModels.setModelList(models);
             
-            String resultModelsXml = JAXBUtils.marshall(resultModels);
+            String resultModelsXml = JAXBUtils.marshall(resultModels, resultModels.getClass());
             
             out.write(resultModelsXml);
             response.setStatus(HttpServletResponse.SC_OK);

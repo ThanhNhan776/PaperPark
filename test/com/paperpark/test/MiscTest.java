@@ -8,7 +8,7 @@ package com.paperpark.test;
 import com.paperpark.dao.model.ModelDAO;
 import com.paperpark.entity.Model;
 import com.paperpark.entity.Tag;
-import com.paperpark.models.ResultModels;
+import com.paperpark.models.ModelList;
 import com.paperpark.utils.JAXBUtils;
 import java.util.ArrayList;
 import java.util.List;

@@ -5,7 +5,8 @@
  */
 package com.paperpark.utils;
 
-import com.paperpark.models.ResultModels;
+import com.paperpark.models.ModelDetail;
+import com.paperpark.models.ModelList;
 import java.io.StringWriter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,19 +19,15 @@ import javax.xml.bind.Marshaller;
  * @author NhanTT
  */
 public class JAXBUtils {
-    public static String marshall(ResultModels models) {
+    public static String marshall(Object obj, Class type) { 
         try {
-            JAXBContext context = JAXBContext.newInstance(ResultModels.class);
+            JAXBContext context = JAXBContext.newInstance(type);
             Marshaller marshaller = context.createMarshaller();
-            
-//            marshaller.setProperty(CharacterEscapeHandler.class.getName(), 
-//                    (CharacterEscapeHandler) (char[] chars, int i, int i1, boolean bln, Writer writer) -> {
-//                writer.write(chars, i, i1);
-//            });
+           
             marshaller.setProperty(Marshaller.JAXB_ENCODING, "utf-8");
 
             StringWriter sw = new StringWriter();
-            marshaller.marshal(models, sw);
+            marshaller.marshal(obj, sw);
             
             return sw.toString().replace("&amp;#", "&#");
         } catch (JAXBException ex) {

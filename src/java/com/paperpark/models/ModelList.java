@@ -19,29 +19,36 @@ import javax.xml.bind.annotation.XmlType;
  * @author NhanTT
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ResultModels", propOrder = {
-    "resultModel"
+@XmlType(name = "ModelList", propOrder = {
+    "modelList"
 })
-@XmlRootElement(name = "result-models")
-public class ResultModels {
+@XmlRootElement(name = "model-list")
+public class ModelList {
+
+    public ModelList() {
+    }
+
+    public ModelList(List<Model> modelList) {
+        this.modelList = modelList;
+    }
     
     @XmlElement(name = "model")
-    private List<Model> resultModel;
+    private List<Model> modelList;
 
     /**
-     * @return the resultModel
+     * @return the modelList
      */
-    public List<Model> getResultModel() {
-        if (resultModel == null) {
-            resultModel = new ArrayList<>();
+    public List<Model> getModelList() {
+        if (modelList == null) {
+            modelList = new ArrayList<>();
         }
-        return resultModel;
+        return modelList;
     }
 
     /**
-     * @param resultModel the resultModel to set
+     * @param modelList the modelList to set
      */
-    public void setResultModel(List<Model> resultModel) {
-        this.resultModel = resultModel;
+    public void setModelList(List<Model> modelList) {
+        this.modelList = modelList;
     }
 }

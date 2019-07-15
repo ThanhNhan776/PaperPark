@@ -31,4 +31,9 @@ public class ConfigConstants {
      * cache models timeout in milliseconds
      */
     public static final long CACHE_MODELS_TIMEOUT = 24*60*60*1000; 
+    
+    /**
+     * maximum number of related models suggested for a specific model
+     */
+    public static final int MAX_RELATED_MODELS = 18*3;
 }

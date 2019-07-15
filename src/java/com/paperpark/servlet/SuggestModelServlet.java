@@ -7,7 +7,7 @@ package com.paperpark.servlet;
 
 import com.paperpark.dao.model.ModelDAO;
 import com.paperpark.entity.Model;
-import com.paperpark.models.ResultModels;
+import com.paperpark.models.ModelList;
 import com.paperpark.utils.JAXBUtils;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -66,10 +66,10 @@ public class SuggestModelServlet extends HttpServlet {
                 }
             });
 
-            ResultModels resultModels = new ResultModels();
-            resultModels.setResultModel(foundModels);
+            ModelList resultModels = new ModelList();
+            resultModels.setModelList(foundModels);
 
-            String resultModelsXml = JAXBUtils.marshall(resultModels);
+            String resultModelsXml = JAXBUtils.marshall(resultModels, resultModels.getClass());
 
             writer.write(resultModelsXml);
             response.setStatus(HttpServletResponse.SC_OK);

@@ -100,36 +100,39 @@ function suggestModels() {
     let url = 'suggestModel';
     let params = 'skillLevel=' + skillLevel + '&difficulty=' + difficulty
             + '&totalHours=' + makeTime;
-    
+
     startSearching(url + '?' + params);
 }
 
 function searchModels() {
+    let modelName = document.getElementById("modelName").value.trim();
+    if (modelName.length === 0) {
+        return;
+    }
+
     showLoadingAnimation();
     hideSearchResult();
-   
-    let modelName = document.getElementById("modelName").value;
 
     let url = 'searchModel';
     let params = 'modelName=' + modelName;
-    
+
     startSearching(url + '?' + params);
 }
 
 function startSearching(url) {
     showLoadingAnimation();
     hideSearchResult();
-    
+
     let div = document.getElementById('section-search-result');
     div.style.display = 'block';
     div.scrollIntoView({
         behavior: 'smooth'
     });
-    
+
     // ajax
     let xhr = new XMLHttpRequest();
     xhr.open('GET', url, true);
-    xhr.overrideMimeType("application/xml");
+    xhr.overrideMimeType('application/xml');
     xhr.onreadystatechange = () => {
         if (xhr.readyState === 4 && xhr.status === 200) {
             let xml = xhr.responseXML;
@@ -140,7 +143,7 @@ function startSearching(url) {
             }
         }
     };
-    
+
     xhr.send(null);
 }
 
@@ -165,7 +168,7 @@ function applyXslToResultModels(resultModels, xsl) {
 
     let resultHtml = xsltProcessor.transformToFragment(resultModels, document);
 
-    let countModels = resultModels.getElementsByTagName('result-models')[0].childElementCount;
+    let countModels = resultModels.getElementsByTagName('model-list')[0].childElementCount;
 
     let div = document.getElementById('search-result');
     div.innerHTML = '<h4 class="text-italic text-center">Tìm thấy ' + countModels + ' kết quả.</h4>';
@@ -229,7 +232,7 @@ function initResultPaging(pageCount) {
 
 function createPagingElement(pageCount) {
     let pagingEl = '<ul class="pagination">';
-    
+
     pagingEl += '<li class="page-item disabled" id="pagePrevious">'
             + '<a href="javascript:handlePagePreviousClick();" tabindex="-1">Trước</a>'
             + '</li>';
@@ -249,9 +252,9 @@ function createPagingElement(pageCount) {
             : '<li id="pageNext" class="page-item disabled">')
             + '<a href="javascript:handlePageNextClick();">Sau</a>'
             + '</li>';
-    
+
     pagingEl += '</ul>';
-    
+
     return pagingEl;
 }
 
@@ -259,19 +262,19 @@ function handlePageClick(pageIndex) {
     if (pageIndex < 1 || pageIndex > _pageCount || pageIndex === _currentPage) {
         return;
     }
-    
+
     activePageItem('page-item-' + pageIndex);
     showResultPage('result-page-' + pageIndex);
-    
+
     _currentPage = pageIndex;
-    
+
     if (pageIndex === 1) {
         disablePageItem('pagePrevious');
     }
     if (pageIndex === _pageCount) {
         disablePageItem('pageNext');
     }
-    
+
     return false;
 }
 
@@ -288,13 +291,13 @@ function handlePageNextClick() {
 function activePageItem(pageId) {
     let page = document.getElementById('page-item-' + _currentPage);
     page.className = page.className.replace(/active/, '');
-    
+
     page = document.getElementById(pageId);
     page.className += ' active';
-    
+
     page = document.getElementById('pagePrevious');
     page.className = page.className.replace(/disabled/, '');
-    
+
     page = document.getElementById('pageNext');
     page.className = page.className.replace(/disabled/, '');
 }
@@ -302,7 +305,7 @@ function activePageItem(pageId) {
 function showResultPage(pageId) {
     let page = document.getElementById('result-page-' + _currentPage);
     page.className = page.className.replace(/show-flex/, 'hide');
-    
+
     page = document.getElementById(pageId);
     page.className = page.className.replace(/hide/, 'show-flex');
 }
