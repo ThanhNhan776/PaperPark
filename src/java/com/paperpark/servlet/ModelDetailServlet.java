@@ -5,21 +5,30 @@
  */
 package com.paperpark.servlet;
 
+import com.paperpark.contants.ConfigConstants;
 import com.paperpark.dao.model.ModelDAO;
 import com.paperpark.entity.Model;
+import com.paperpark.entity.Tag;
 import com.paperpark.models.ModelDetail;
 import com.paperpark.models.ModelList;
 import com.paperpark.utils.JAXBUtils;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.util.Pair;
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  *
@@ -43,22 +52,74 @@ public class ModelDetailServlet extends HttpServlet {
         String idString = request.getParameter("id");
         try (PrintWriter out = response.getWriter()) {
             int id = Integer.parseInt(idString);
-            
+
             ModelDAO modelDAO = ModelDAO.getInstance();
             Model mainModel = modelDAO.getModelById(id);
-            
-            List<Model> relatedModels = modelDAO.getModelsByName("cap");
-            ModelList relatedModelList = new ModelList(relatedModels);
-            
+
+            ModelList relatedModelList = getRelatedModelList(request);
+
             ModelDetail modelDetail = new ModelDetail(mainModel, relatedModelList);
-            
+
             String modelDetailXml = JAXBUtils.marshall(modelDetail, ModelDetail.class);
-            
+
             out.write(modelDetailXml);
             response.setStatus(HttpServletResponse.SC_OK);
         } catch (Exception e) {
             Logger.getLogger(ModelDetailServlet.class.getName()).log(Level.SEVERE, null, e);
         }
+    }
+
+    private ModelList getRelatedModelList(HttpServletRequest request) {
+        HttpSession session = request.getSession();
+
+        List<Model> allModels = (List<Model>) session.getAttribute("MODELS");
+        if (allModels == null) {
+            ServletContext context = session.getServletContext();
+            ModelDAO modelDAO = ModelDAO.getInstance();
+            allModels = modelDAO.getAllModels(context);
+        }
+
+        int modelId = Integer.parseInt(request.getParameter("id"));
+
+        Model mainModel = null;
+        for (int i = 0; i < allModels.size(); ++i) {
+            Model model = allModels.get(i);
+            if (model.getId() == modelId) {
+                mainModel = model;
+                break;
+            }
+        }
+
+        List<Pair<Double, Model>> cosineArr = new ArrayList<>();
+        for (int i = 0; i < allModels.size(); ++i) {
+            Model model = allModels.get(i);
+            if (model.getId() == mainModel.getId()) {
+                continue;
+            }
+            
+            Double cosine = calculateCosine(mainModel, model);
+            cosineArr.add(new Pair<>(cosine, model));
+        }
+
+        Collections.sort(cosineArr, new Comparator<Pair<Double, Model>>() {
+            @Override
+            public int compare(Pair<Double, Model> o1, Pair<Double, Model> o2) {
+                return o2.getKey().compareTo(o1.getKey());
+            }
+        });
+        
+        // get top Config.MAX model from cosine array
+        int upperBound = Math.min(ConfigConstants.MAX_RELATED_MODELS, allModels.size());
+        List<Model> relatedModels = new ArrayList<>();
+        
+        for (int i = 0; i < upperBound; ++i) {
+            Model relatedModel = cosineArr.get(i).getValue();
+            relatedModels.add(relatedModel);
+        }
+        
+        ModelList relatedModelList = new ModelList(relatedModels);
+        
+        return relatedModelList;
     }
 
     // <editor-fold defaultstate="collapsed" desc="HttpServlet methods. Click on the + sign on the left to edit the code.">
@@ -100,4 +161,87 @@ public class ModelDetailServlet extends HttpServlet {
         return "Short description";
     }// </editor-fold>
 
+    /**
+     * calculate cosine similarity of two models use the vectors [name, sheets,
+     * parts, difficulty, estimateTime, category, tags]
+     *
+     * @param mainModel
+     * @param model
+     * @return
+     */
+    private Double calculateCosine(Model mainModel, Model model) {
+        double[] mainModelVector = new double[7];
+        double[] modelVector = new double[7];
+
+        String[] mainSplittedName = mainModel.getName().split("\\s+");
+        String[] splittedName = model.getName().split("\\s+");
+        mainModelVector[0] = mainSplittedName.length;
+        modelVector[0] = countSimilarStrings(mainSplittedName, splittedName);
+
+        mainModelVector[1] = mainModel.getNumOfSheets();
+        modelVector[1] = model.getNumOfSheets();
+
+        mainModelVector[2] = mainModel.getNumOfParts() != null ? mainModel.getNumOfParts() : 0;
+        modelVector[2] = model.getNumOfParts() != null ? model.getNumOfParts() : 0;
+
+        mainModelVector[3] = mainModel.getDifficulty();
+        modelVector[3] = model.getDifficulty();
+
+        mainModelVector[4] = mainModel.getEstimateTime() != null ? mainModel.getEstimateTime() : 0;
+        modelVector[4] = model.getEstimateTime() != null ? model.getEstimateTime() : 0;
+
+        mainModelVector[5] = 1;
+        modelVector[5] = mainModel.getCategoryId().equals(model.getCategoryId()) ? 1 : 0;
+
+        mainModelVector[6] = mainModel.getTagCollection().size();
+        modelVector[6] = countSimilarTags(mainModel.getTagCollection(), model.getTagCollection());
+
+        double cosine = -1;
+        double numerator = 0;
+        for (int i = 0; i < mainModelVector.length; ++i) {
+            numerator += mainModelVector[i] * modelVector[i];
+        }
+        
+        double denominator = 0, mainMagnitude = 0, magnitude = 0;
+        for (int i = 0; i < mainModelVector.length; ++i) {
+            mainMagnitude += mainModelVector[i] * mainModelVector[i];
+            magnitude += modelVector[i] * modelVector[i];
+        }
+        denominator = Math.sqrt(mainMagnitude * magnitude);
+        
+        cosine = numerator / denominator;
+
+        return cosine;
+    }
+
+    private double countSimilarStrings(String[] mainSplittedName, String[] splittedName) {
+        boolean[] check = new boolean[splittedName.length];
+        for (int i = 0; i < check.length; ++i) {
+            check[i] = false;
+        }
+
+        double count = 0;
+        for (int i = 0; i < mainSplittedName.length; ++i) {
+            for (int j = 0; j < splittedName.length; ++j) {
+                if (!check[j] && mainSplittedName[i].equalsIgnoreCase(splittedName[j])) {
+                    check[j] = true;
+                    ++count;
+                    break;
+                }
+            }
+        }
+
+        return count;
+    }
+
+    private double countSimilarTags(Collection<Tag> mainTags, Collection<Tag> tags) {
+        double count = 0;
+        for (Tag tag : tags) {
+            if (mainTags.contains(tag)) {
+                ++count;
+            }
+        }
+
+        return count;
+    }
 }

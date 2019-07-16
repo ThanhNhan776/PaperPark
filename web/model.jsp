@@ -24,10 +24,13 @@
             </a>
         </div>
         <h2 class="heading-title">Chọn mẫu mô hình giấy của bạn</h2>
+
+        <div id="div-loading" class="loading loading-lg" style="display: none">
+        </div>
         
         <div id="section-model-detail">
         </div>
-        
+
         <div class="container" id="paginationContainer">
         </div>
     </body>

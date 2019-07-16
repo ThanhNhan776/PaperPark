@@ -3,6 +3,8 @@ window.addEventListener('load', () => {
 }, false);
 
 function loadModel() {
+    showLoadingAnimation();
+    
     let urlString = window.location.href; // www.test.com?id=test
     let url = new URL(urlString);
     let modelId = url.searchParams.get('id');
@@ -42,6 +44,8 @@ function handleModelDetailReceived(modelDetail) {
 }
 
 function applyXslToModelDetail(modelDetail, xsl) {
+    hideLoadingAnimation();
+    
     let xsltProcessor = new XSLTProcessor();
     xsltProcessor.importStylesheet(xsl);
     

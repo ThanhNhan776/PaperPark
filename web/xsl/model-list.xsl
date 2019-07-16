@@ -14,6 +14,7 @@
     <xsl:param name="pageSize" select="60"/>
     
     <xsl:template match="model-list">
+        <h5 class="text-italic">Mô hình tương tự:</h5>
         <xsl:for-each select="model[position() mod $pageSize = 1]">
             <div id="result-page-{position()}" class="columns hide">
                 <xsl:apply-templates select="self::*|following-sibling::*[position() &lt; $pageSize]"/>
@@ -31,15 +32,31 @@
                     <div class="card-title h5">
                         <xsl:value-of select="name"/>
                     </div>
-                    <div class="card-subtitle text-gray">Số tờ kit: <xsl:value-of select="num-of-sheets"/></div>
                 </div>
                 <div class="card-body">
-                    <p>
-                        Độ khó: <xsl:value-of select="difficulty"/>
-                    </p>
+                    Số tờ: <xsl:value-of select="num-of-sheets"/>
+                    <br/>
+                    <xsl:if test="string-length(num-of-parts) > 0">
+                        Số chi tiết: <xsl:value-of select="num-of-parts"/>
+                        <br/>
+                    </xsl:if>
+                    Độ khó: <xsl:value-of select="difficulty"/>
+                    <br/>
+                    <xsl:if test="string-length(estimate-time) > 0">
+                        Thời gian: 
+                        <xsl:if test="estimate-time &lt; 1">
+                            <xsl:value-of select="format-number(estimate-time * 60, '###,###')"/>
+                            phút
+                        </xsl:if>
+                        <xsl:if test="estimate-time >= 1">
+                            <xsl:value-of select="format-number(estimate-time, '###,###')"/> 
+                            giờ
+                        </xsl:if>
+                        <br/>
+                    </xsl:if>
                 </div>
                 <div class="card-footer">
-                    <a href="http://localhost:8084/PaperPark/model.jsp?id={id}" target="_blank">Xem chi tiết</a>
+                    <a href="/PaperPark/model.jsp?id={id}" target="_blank">Xem chi tiết</a>
                 </div>
             </div>
         </div>

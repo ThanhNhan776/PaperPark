@@ -11,6 +11,7 @@ import com.paperpark.models.ModelList;
 import com.paperpark.utils.JAXBUtils;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,6 +20,7 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  *
@@ -39,19 +41,33 @@ public class SearchModelServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/xml;charset=UTF-8");
-        
+
         String modelName = request.getParameter("modelName");
-        
+
         try (PrintWriter out = response.getWriter()) {
             ModelDAO modelDAO = ModelDAO.getInstance();
-            
-            List<Model> models = modelDAO.getModelsByName(modelName);
-            
+
+            HttpSession session = request.getSession();
+            Integer skillLevel = (Integer) session.getAttribute("SKILL_LEVEL");
+
+            List<Model> models;
+            if (skillLevel != null) {
+                List<Model> allModels = modelDAO.getAllModels(session, skillLevel);
+                models = new ArrayList<>();
+                allModels.forEach((model) -> {
+                    if (model.getName().toLowerCase().contains(modelName.toLowerCase())) {
+                        models.add(model);
+                    }
+                });
+            } else {
+                models = modelDAO.getModelsByName(modelName);
+            }
+
             ModelList resultModels = new ModelList();
             resultModels.setModelList(models);
-            
+
             String resultModelsXml = JAXBUtils.marshall(resultModels, resultModels.getClass());
-            
+
             out.write(resultModelsXml);
             response.setStatus(HttpServletResponse.SC_OK);
         } catch (Exception e) {
