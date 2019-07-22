@@ -22,7 +22,7 @@
         <div class="column col-6 col-xs-12">
             <div class="card no-border">
                 <div class="card-header">
-                    <div class="card-title h3">
+                    <div class="card-title h3" id="model-name">
                         <xsl:value-of select="name"/>
                     </div>
                     <div class="card-body">
@@ -30,16 +30,60 @@
                             <tbody>
                                 <tr>
                                     <td>Số tờ</td>
-                                    <td><xsl:value-of select="num-of-sheets"/></td>
+                                    <td>
+                                        <xsl:value-of select="num-of-sheets"/>
+                                    </td>
                                 </tr>
+                                
+                                <xsl:if test="string-length(num-of-parts) > 0">
+                                    <tr>
+                                        <td>Số chi tiết</td>
+                                        <td>
+                                            <xsl:value-of select="num-of-parts"/>
+                                        </td>
+                                    </tr>
+                                </xsl:if>
+                                
                                 <tr>
                                     <td>Độ khó</td>
-                                    <td><xsl:value-of select="difficulty"/></td>
+                                    <td>
+                                        <xsl:value-of select="difficulty"/>
+                                    </td>
                                 </tr>
+                                
+                                <xsl:if test="string-length(format) > 0">
+                                    <tr>
+                                        <td>Định dạng</td>
+                                        <td>
+                                            <xsl:value-of select="format"/>
+                                        </td>
+                                    </tr>
+                                </xsl:if>
+                                
                                 <tr>
-                                    <td>Thời gian</td>
-                                    <td><xsl:value-of select="estimate-time"/></td>
+                                    <td>Hướng dẫn</td>
+                                    <td>
+                                        <xsl:if test="has-instruction = 'true'">Có</xsl:if>
+                                        <xsl:if test="string-length(has-instruction) = 0">Không</xsl:if>
+                                        <xsl:if test="has-instruction = 'false'">Không</xsl:if>
+                                    </td>
                                 </tr>
+                                
+                                <xsl:if test="string-length(estimate-time) > 0">
+                                    <tr>
+                                        <td>Thời gian</td>
+                                        <td>
+                                            <xsl:if test="estimate-time &lt; 1">
+                                                <xsl:value-of select="format-number(estimate-time * 60, '###,###')"/>
+                                                phút
+                                            </xsl:if>
+                                            <xsl:if test="estimate-time >= 1">
+                                                <xsl:value-of select="format-number(estimate-time, '###,###')"/> 
+                                                giờ
+                                            </xsl:if>
+                                        </td>
+                                    </tr>
+                                </xsl:if>
                             </tbody>
                         </table>
                     </div>

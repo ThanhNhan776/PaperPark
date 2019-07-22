@@ -289,5 +289,24 @@ public class Model implements Serializable {
 
         return totalTime;
     }
+    
+    public void copyValueOf(Model model) {
+        if (model == null) {
+            return;
+        }
+        
+        id = model.id;
+        name = model.name;
+        numOfSheets = model.numOfSheets;
+        numOfParts = model.numOfParts;
+        difficulty = model.difficulty;
+        format = model.format;
+        imageSrc = model.imageSrc;
+        link = model.link;
+        hasInstruction = model.hasInstruction;
+        categoryId = model.categoryId;
+        tagCollection = model.tagCollection;
+        estimateTime = model.estimateTime;
+    }
 
 }

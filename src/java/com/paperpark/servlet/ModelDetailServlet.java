@@ -17,8 +17,8 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.util.Pair;
@@ -53,10 +53,9 @@ public class ModelDetailServlet extends HttpServlet {
         try (PrintWriter out = response.getWriter()) {
             int id = Integer.parseInt(idString);
 
-            ModelDAO modelDAO = ModelDAO.getInstance();
-            Model mainModel = modelDAO.getModelById(id);
+            Model mainModel = new Model();
 
-            ModelList relatedModelList = getRelatedModelList(request);
+            ModelList relatedModelList = getRelatedModelListAndMainModel(request, mainModel, id);
 
             ModelDetail modelDetail = new ModelDetail(mainModel, relatedModelList);
 
@@ -69,7 +68,7 @@ public class ModelDetailServlet extends HttpServlet {
         }
     }
 
-    private ModelList getRelatedModelList(HttpServletRequest request) {
+    private ModelList getRelatedModelListAndMainModel(HttpServletRequest request, Model returnMainModel, int id) {
         HttpSession session = request.getSession();
 
         List<Model> allModels = (List<Model>) session.getAttribute("MODELS");
@@ -79,7 +78,7 @@ public class ModelDetailServlet extends HttpServlet {
             allModels = modelDAO.getAllModels(context);
         }
 
-        int modelId = Integer.parseInt(request.getParameter("id"));
+        int modelId = id;
 
         Model mainModel = null;
         for (int i = 0; i < allModels.size(); ++i) {
@@ -89,11 +88,13 @@ public class ModelDetailServlet extends HttpServlet {
                 break;
             }
         }
+        
+        returnMainModel.copyValueOf(mainModel);
 
         List<Pair<Double, Model>> cosineArr = new ArrayList<>();
         for (int i = 0; i < allModels.size(); ++i) {
             Model model = allModels.get(i);
-            if (model.getId() == mainModel.getId()) {
+            if (Objects.equals(model.getId(), mainModel.getId())) {
                 continue;
             }
             
@@ -101,12 +102,9 @@ public class ModelDetailServlet extends HttpServlet {
             cosineArr.add(new Pair<>(cosine, model));
         }
 
-        Collections.sort(cosineArr, new Comparator<Pair<Double, Model>>() {
-            @Override
-            public int compare(Pair<Double, Model> o1, Pair<Double, Model> o2) {
-                return o2.getKey().compareTo(o1.getKey());
-            }
-        });
+        Collections.sort(cosineArr, 
+                (Pair<Double, Model> o1, Pair<Double, Model> o2) -> 
+                        o2.getKey().compareTo(o1.getKey()));
         
         // get top Config.MAX model from cosine array
         int upperBound = Math.min(ConfigConstants.MAX_RELATED_MODELS, allModels.size());
@@ -244,4 +242,5 @@ public class ModelDetailServlet extends HttpServlet {
 
         return count;
     }
+    
 }

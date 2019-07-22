@@ -12,9 +12,13 @@
     <xsl:output method="html" indent="yes"/>
     
     <xsl:param name="pageSize" select="60"/>
+    <xsl:param name="isRelatedModels" select="'false'"/>
     
     <xsl:template match="model-list">
-        <h5 class="text-italic">Mô hình tương tự:</h5>
+        <xsl:if test="$isRelatedModels = 'true'">
+            <h5 class="text-italic">Mô hình tương tự:</h5>
+        </xsl:if>
+        
         <xsl:for-each select="model[position() mod $pageSize = 1]">
             <div id="result-page-{position()}" class="columns hide">
                 <xsl:apply-templates select="self::*|following-sibling::*[position() &lt; $pageSize]"/>
@@ -26,7 +30,13 @@
         <div class="column col-2 col-md-4 col-sm-6 col-xs-12">
             <div class="card">
                 <div class="card-image">
-                    <img src="{image-src}" class="img-responsive" alt="{name}" title="{name}" width="100%"/>    
+                    <div class="hover14">
+                        <a href="/PaperPark/model.jsp?id={id}" target="_blank">
+                            <figure>
+                                <img src="{image-src}" class="img-responsive" alt="{name}" title="{name}" width="100%"/>    
+                            </figure>
+                        </a>
+                    </div>
                 </div>
                 <div class="card-header">
                     <div class="card-title h5">

@@ -9,9 +9,15 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+        <link rel="shortcut icon" href="img/favicon.ico" />
+
+        <link href="css/image-effect.css" rel="stylesheet" type="text/css"/>
+        
         <link href="css/spectre.min.css" rel="stylesheet" type="text/css"/>
         <link href="css/spectre-exp.min.css" rel="stylesheet" type="text/css"/>
         <link href="css/spectre-icons.min.css" rel="stylesheet" type="text/css"/>
+        
         <link href="css/home.css" rel="stylesheet" type="text/css"/>
         <script src="js/home.js" type="text/javascript"></script>
         <title>PaperPark</title>
@@ -19,7 +25,7 @@
     <body>
         <div class="app-logo">
             <a href="http://localhost:8084/PaperPark/">
-                <img src="img/logo.jpg" alt="PaperPark" width="400"/>
+                <img src="img/logo.jpg" alt="PaperPark" width="400" title="PaperPark"/>
             </a>
         </div>
         <h2 class="heading-title">Chọn mẫu mô hình giấy của bạn</h2>
@@ -54,23 +60,23 @@
 
                         <div class="form-group">
                             <label class="form-label">Thời gian bạn có để làm mô hình</label>
-                            <div class="input-group">
+                            <div class="input-group hide">
                                 <input type="number" class="form-input text-right" min="0"
                                        id="makeTimeDay" onchange="handleTimePickerChangeDays()"
                                        value="0"/>
                                 <span class="input-group-addon addon-custom">ngày</span>
                             </div>
-                            <div class="input-group">
+                            <div class="input-group hide">
                                 <input type="number" class="form-input text-right" min="0" max="24" step="0.1"
                                        id="makeTimeHoursPerDay" onchange="handleTimePickerChangeHoursPerDay()"
                                        value="0"/>
                                 <span class="input-group-addon addon-custom">tiếng/ngày</span>
                             </div>
                             <div class="input-group">
-                                <input type="number" class="form-input text-right bg-primary" min="0" step="0.1"
+                                <input type="number" class="form-input text-right" min="0" step="0.1"
                                        id="makeTimeTotalHours" onchange="handleTimePickerChangeTotalHours()"
                                        value="0"/>
-                                <span class="input-group-addon addon-custom bg-primary-emphasis">tiếng</span>
+                                <span class="input-group-addon addon-custom">tiếng</span>
                             </div>
                         </div>
                         <div class="form-group text-center">
